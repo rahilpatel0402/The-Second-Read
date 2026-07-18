@@ -1,0 +1,52 @@
+{
+  "chart_id": "marcus-bell",
+  "title": "Marcus Bell - SNF rehab after ischemic stroke",
+  "patient": {
+    "name": "Marcus Bell",
+    "dob": "1957-09-02",
+    "age": 68,
+    "sex": "male",
+    "mrn": "SNF-100437",
+    "setting": "Skilled Nursing Facility - Cedar Ridge",
+    "admit_date": "2026-03-05",
+    "admit_reason": "Rehabilitation after left MCA ischemic stroke"
+  },
+  "note_under_review": {
+    "id": "NOTE-ADMIT",
+    "type": "Provider Admission Note (draft under review)",
+    "discipline": "Provider",
+    "author": "Dr. Alvarez, MD (attending)",
+    "timestamp": "2026-03-05T11:00:00-08:00",
+    "provenance": "authored-for-demo",
+    "text": "SKILLED NURSING FACILITY ADMISSION NOTE\n\nSubjective: Mr. Marcus Bell is a 68-year-old man admitted for rehabilitation\nafter a left middle cerebral artery ischemic stroke. He has residual right-sided\nweakness and reports his speech and swallowing \"feel almost back to normal.\" He\nis motivated and independent-minded.\n\nObjective: Alert, oriented, mild expressive aphasia, mild right facial droop.\nRight upper and lower extremity strength 4-/5. He fed himself lunch without\nobvious difficulty during my visit. Diet: regular, no restrictions. Patient is\nmodified independent with activities of daily living.\n\nAssessment and Plan:\n\n### Ischemic stroke, cardioembolic (atrial fibrillation)\n- Started apixaban 5 mg twice daily for cardioembolic stroke prevention\n- Continue rehabilitation with physical, occupational, and speech therapy\n\n### Rehabilitation\n- Advance mobility and self-care as tolerated"
+  },
+  "documents": [
+    {
+      "id": "SLP-EVAL-001",
+      "type": "Speech-Language Pathology - Bedside Swallow Evaluation",
+      "discipline": "Physical Therapy",
+      "author": "K. Adeyemi, MS, CCC-SLP",
+      "timestamp": "2026-03-05T16:00:00-08:00",
+      "provenance": "authored-for-demo",
+      "text": "SPEECH-LANGUAGE PATHOLOGY - BEDSIDE SWALLOW EVALUATION\nDate of service: 2026-03-05 16:00.\n\nSpeech-language pathology bedside swallow evaluation reveals moderate\noropharyngeal dysphagia with delayed swallow initiation and overt signs of\naspiration on thin liquids (wet vocal quality, coughing after swallows).\nRecommend nectar-thick liquids and a mechanical soft diet with aspiration\nprecautions and supervision at meals.\n\nA regular, unrestricted diet is not safe for this patient at this time."
+    },
+    {
+      "id": "MAR-001",
+      "type": "Medication Administration Record (carried from prior records)",
+      "discipline": "Nursing",
+      "author": "Prior-records transfer packet",
+      "timestamp": "2026-03-03T09:00:00-08:00",
+      "provenance": "authored-for-demo",
+      "text": "MEDICATION ADMINISTRATION RECORD (carried from prior records)\nLast reconciled: 2026-03-03 (acute hospital, before the SNF transfer).\n\nActive medications:\n  - aspirin 81 mg once daily\n  - atorvastatin 40 mg once daily\n  - lisinopril 10 mg once daily\n\nNo oral anticoagulant listed. This MAR has not been reconciled with the SNF\nadmission orders."
+    },
+    {
+      "id": "OT-EVAL-001",
+      "type": "Occupational Therapy Initial Evaluation",
+      "discipline": "Occupational Therapy",
+      "author": "D. Fischer, OTR/L",
+      "timestamp": "2026-03-05T15:20:00-08:00",
+      "provenance": "authored-for-demo",
+      "text": "OCCUPATIONAL THERAPY INITIAL EVALUATION\nDate of service: 2026-03-05 15:20.\n\nSelf-care - Section GG admission performance:\n  GG0130A Eating: 04 - Supervision/touching assistance\n  GG0130B Oral hygiene: 03 - Partial/moderate assistance\n  GG0130C Toileting hygiene: 03 - Partial/moderate assistance\n  Upper-body dressing: 03 - Partial/moderate assistance\n  Lower-body dressing and bathing: 03 - Partial/moderate assistance\n\nOccupational therapy evaluation: patient requires moderate assistance for upper-\nand lower-body dressing and bathing; he is not independent with ADLs. The Section\nGG self-care scores support a substantially higher assistance level than the\nadmission note's \"modified independent\" description, and drive the PDPM case-mix."
+    }
+  ]
+}

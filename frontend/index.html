@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>The Second Read</title>
+<style>
+  :root {
+    --bg: #f6f7f9; --panel: #ffffff; --ink: #14181f; --muted: #5b6472;
+    --line: #e4e7ec; --accent: #1f6feb; --accent-ink: #0b3d91;
+    --strike: #c92a2a; --insert: #b8860b; --therapy: #1f6feb;
+    --nursing: #0d9488; --provider: #7c3aed; --stale: #d9480f;
+    --good: #2f9e44; --chip: #eef1f5; --code-bg: #0f1420; --code-ink: #d7e2f4;
+    --shadow: 0 1px 2px rgba(16,24,40,.06), 0 4px 16px rgba(16,24,40,.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0d1117; --panel: #161b22; --ink: #e6edf3; --muted: #9aa4b2;
+      --line: #2a313c; --accent: #4c8dff; --chip: #1f2630; --code-bg: #0b0f16;
+      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 4px 16px rgba(0,0,0,.35);
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 22px 20px 80px; }
+  header.top { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+  .brand { font-size: 26px; font-weight: 750; letter-spacing: -.02em; }
+  .brand .dot { color: var(--accent); }
+  .tag { color: var(--muted); font-size: 14px; }
+  .banner {
+    margin-top: 16px; background: var(--panel); border: 1px solid var(--line);
+    border-radius: 12px; padding: 14px 18px; display: flex; gap: 26px;
+    flex-wrap: wrap; box-shadow: var(--shadow);
+  }
+  .banner .who { font-weight: 700; font-size: 16px; }
+  .banner .meta { color: var(--muted); font-size: 13px; }
+  .banner b { color: var(--ink); font-weight: 600; }
+
+  .controls { margin-top: 14px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .controls label { font-size: 13px; color: var(--muted); display:flex; gap:7px; align-items:center; }
+  select#caseSelect {
+    font-size: 14px; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--line);
+    background: var(--panel); color: var(--ink); min-width: 300px;
+  }
+  .importpanel { margin-top: 12px; }
+  .importpanel textarea {
+    width:100%; min-height: 120px; border:1px solid var(--line); border-radius:8px; padding:10px;
+    font: 12px/1.5 ui-monospace, Menlo, Consolas, monospace; background: var(--bg); color: var(--ink);
+  }
+  .importpanel .row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-top:8px; }
+
+  .grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: 18px; margin-top: 18px; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+  .panel {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+    box-shadow: var(--shadow); overflow: hidden;
+  }
+  .panel h2 {
+    margin: 0; padding: 13px 16px; font-size: 13px; text-transform: uppercase;
+    letter-spacing: .06em; color: var(--muted); border-bottom: 1px solid var(--line);
+    display:flex; justify-content: space-between; align-items:center;
+  }
+  .panel .body { padding: 14px 16px; }
+  textarea#note {
+    width: 100%; min-height: 260px; resize: vertical; border: 1px solid var(--line);
+    border-radius: 8px; padding: 12px; font: 13px/1.55 "SFMono-Regular", ui-monospace, Menlo, Consolas, monospace;
+    background: var(--bg); color: var(--ink);
+  }
+  .run {
+    margin-top: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+  }
+  button.primary {
+    background: var(--accent); color: #fff; border: 0; border-radius: 8px;
+    padding: 11px 18px; font-size: 15px; font-weight: 650; cursor: pointer;
+  }
+  button.primary:disabled { opacity: .55; cursor: default; }
+  button.ghost {
+    background: transparent; color: var(--muted); border: 1px solid var(--line);
+    border-radius: 8px; padding: 10px 14px; font-size: 13px; cursor: pointer;
+  }
+  .hint { color: var(--muted); font-size: 12.5px; }
+
+  .doc { border: 1px solid var(--line); border-radius: 9px; margin-bottom: 9px; }
+  .doc summary {
+    list-style: none; cursor: pointer; padding: 10px 12px; display: flex;
+    gap: 10px; align-items: center; flex-wrap: wrap;
+  }
+  .doc summary::-webkit-details-marker { display: none; }
+  .doc .dtype { font-weight: 620; font-size: 13.5px; }
+  .doc pre {
+    margin: 0; padding: 10px 12px; border-top: 1px solid var(--line);
+    white-space: pre-wrap; font: 12px/1.5 ui-monospace, Menlo, Consolas, monospace;
+    color: var(--ink); background: var(--bg);
+  }
+  .chip {
+    font-size: 11px; padding: 2px 8px; border-radius: 999px; background: var(--chip);
+    color: var(--muted); border: 1px solid var(--line); white-space: nowrap;
+  }
+  .chip.abridge { color: var(--nursing); }
+  .chip.authored { color: var(--insert); }
+
+  /* stage tracker */
+  .stages { display: flex; gap: 8px; flex-wrap: wrap; margin: 4px 0 6px; }
+  .stagepill {
+    font-size: 12px; padding: 6px 11px; border-radius: 999px; border: 1px solid var(--line);
+    color: var(--muted); background: var(--panel); display: flex; gap: 7px; align-items: center;
+  }
+  .stagepill.active { color: var(--accent); border-color: var(--accent); font-weight: 650; }
+  .stagepill.done { color: var(--good); border-color: var(--good); }
+  .stagepill .n { font-variant-numeric: tabular-nums; opacity: .7; }
+
+  .log { font: 12.5px/1.5 ui-monospace, Menlo, Consolas, monospace; color: var(--muted); }
+  .log .line { padding: 3px 0; }
+  .log .k { color: var(--accent); }
+  .log .read { color: var(--nursing); }
+
+  .ledger { display: grid; gap: 6px; }
+  .lrow { display: grid; grid-template-columns: 1fr; gap: 3px; border-left: 3px solid var(--line);
+          padding: 7px 10px; background: var(--bg); border-radius: 6px; }
+  .lrow .f { font-weight: 620; font-size: 13px; }
+  .lrow .v { font-size: 13px; }
+  .lrow .q { font-size: 12px; color: var(--muted); font-style: italic; }
+
+  .finding {
+    border: 1px solid var(--line); border-left-width: 5px; border-radius: 10px;
+    padding: 14px 16px; margin-bottom: 14px; background: var(--panel);
+  }
+  .finding h3 { margin: 0 0 8px; font-size: 16px; display:flex; align-items:center; gap:10px; flex-wrap: wrap;}
+  .badge {
+    font-size: 11px; font-weight: 750; letter-spacing: .04em; text-transform: uppercase;
+    padding: 4px 9px; border-radius: 6px; color: #fff;
+  }
+  .sev { font-size: 11px; padding: 2px 8px; border-radius: 999px; border:1px solid var(--line); color: var(--muted);}
+  .claimline { margin: 8px 0; }
+  .lbl { font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-bottom: 2px; }
+  .qnote {
+    border-left: 3px solid var(--strike); padding: 6px 10px; background: rgba(201,42,42,.06);
+    border-radius: 4px; font-size: 13.5px;
+  }
+  .qsrc {
+    border-left: 3px solid var(--therapy); padding: 6px 10px; background: rgba(31,111,235,.06);
+    border-radius: 4px; font-size: 13.5px;
+  }
+  .srcchip { margin-top: 6px; }
+  .srcchip .chip { background: var(--code-bg); color: var(--code-ink); border-color: transparent; }
+  .pdpm { margin-top: 8px; font-size: 13px; color: var(--stale); }
+  .pdpm b { color: var(--stale); }
+  .rationale { margin-top: 8px; font-size: 13px; color: var(--muted); }
+  .drafted {
+    margin-top: 10px; background: var(--code-bg); color: var(--code-ink); border-radius: 8px;
+    padding: 12px 14px; font: 12.5px/1.55 ui-monospace, Menlo, Consolas, monospace; white-space: pre-wrap;
+  }
+  .draftbar { margin-top: 8px; display:flex; gap: 8px; align-items:center; }
+  .draftbar .to { font-size: 12px; color: var(--muted); }
+  .approve { background: var(--good); color:#fff; border:0; border-radius:7px; padding: 7px 12px; font-size:12.5px; font-weight:650; cursor:pointer;}
+  .approve.done { background: transparent; color: var(--good); border:1px solid var(--good); cursor: default; }
+
+  .suppressed { font-size: 12px; color: var(--muted); font-style: italic; padding: 4px 0; }
+  .empty { color: var(--muted); font-size: 14px; }
+  .footprint { margin-top: 8px; font-size: 12.5px; color: var(--muted); }
+  .spin { width: 13px; height: 13px; border: 2px solid var(--line); border-top-color: var(--accent);
+          border-radius: 50%; display:inline-block; animation: sp .7s linear infinite; }
+  @keyframes sp { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">The Second Read<span class="dot">.</span></div>
+    <div class="tag">Every scribe writes down what the doctor says. This one reads it back against the rest of the chart&nbsp;&mdash; and challenges it.</div>
+  </header>
+
+  <div class="banner" id="banner"></div>
+
+  <div class="controls">
+    <label>Case
+      <select id="caseSelect"></select>
+    </label>
+    <button class="ghost" id="importToggle">Import data&hellip;</button>
+    <span class="hint" id="importHint"></span>
+  </div>
+
+  <div class="panel importpanel" id="importPanel" style="display:none">
+    <h2>Import a chart</h2>
+    <div class="body">
+      <div class="hint">Paste a native chart JSON (with <code>note_under_review</code> + <code>documents</code>) or an Abridge FHIR record (with <code>patient_context</code> + <code>note</code> + <code>transcript</code>), or choose a <code>.json</code> file.</div>
+      <textarea id="importText" spellcheck="false" placeholder='{ "note_under_review": {...}, "documents": [...] }'></textarea>
+      <div class="row">
+        <input type="file" id="importFile" accept=".json,application/json" />
+        <button class="primary" id="importBtn">Load imported chart</button>
+        <span class="hint" id="importStatus"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <section class="panel">
+      <h2>Note under review <span class="hint">editable &mdash; try changing a claim</span></h2>
+      <div class="body">
+        <textarea id="note" spellcheck="false"></textarea>
+        <div class="run">
+          <button class="primary" id="runBtn">Run The Second Read</button>
+          <button class="ghost" id="resetBtn">Reset note</button>
+          <span class="hint" id="status"></span>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>The rest of the chart <span class="hint" id="docCount"></span></h2>
+      <div class="body" id="docs"></div>
+    </section>
+  </div>
+
+  <section class="panel" style="margin-top:18px">
+    <h2>The Second Read &mdash; retrieve &rarr; extract &rarr; reconcile &rarr; route &rarr; act</h2>
+    <div class="body">
+      <div class="stages" id="stages"></div>
+
+      <div id="retrieveBox" style="display:none">
+        <div class="lbl" style="margin:10px 0 4px">Retrieve &mdash; the agent chooses what to pull</div>
+        <div class="log" id="retrieveLog"></div>
+      </div>
+
+      <div id="ledgerBox" style="display:none">
+        <div class="lbl" style="margin:14px 0 6px">Cited state ledger &mdash; every fact carries a source quote</div>
+        <div class="ledger" id="ledger"></div>
+      </div>
+
+      <div id="findingsBox" style="display:none">
+        <div class="lbl" style="margin:16px 0 8px">Findings &mdash; routed and drafted for approval</div>
+        <div id="findings"></div>
+        <div id="suppressed"></div>
+      </div>
+
+      <div class="footprint" id="footprint"></div>
+    </div>
+  </section>
+</div>
+
+<script>
+const ACTION_META = {
+  strike:           { label: "Strike",            color: "var(--strike)" },
+  attributed_insert:{ label: "Attributed insert", color: "var(--insert)" },
+  query_therapy:    { label: "Query → Therapy", color: "var(--therapy)" },
+  query_nursing:    { label: "Query → Nursing", color: "var(--nursing)" },
+  query_provider:   { label: "Query → Provider", color: "var(--provider)" },
+  flag_stale:       { label: "Flag record stale", color: "var(--stale)" },
+};
+const STAGE_DEFS = [
+  ["retrieve","Retrieve"],["extract","Extract"],["reconcile","Reconcile"],
+  ["route","Route"],["act","Act"],
+];
+
+let baseNote = "";
+let currentChart = null;     // the full chart object under review
+let importedChart = null;    // holds an imported chart, if any
+
+function esc(s){ return (s||"").replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+
+function provChip(p){
+  if (p === 'authored-for-demo') return '<span class="chip authored">authored for demo</span>';
+  if (p === 'abridge-synthetic') return '<span class="chip abridge">Abridge dataset</span>';
+  if (p === 'imported') return '<span class="chip abridge">imported</span>';
+  return '';
+}
+
+function renderChart(c){
+  currentChart = c;
+  const p = c.patient || {};
+  document.getElementById('banner').innerHTML =
+    `<div><div class="who">${esc(p.name||'')}</div>
+       <div class="meta">${esc(p.setting||'')}</div></div>
+     <div class="meta">Age <b>${esc(String(p.age||'-'))}</b> &middot; DOB <b>${esc(p.dob||'-')}</b> &middot; MRN <b>${esc(p.mrn||'-')}</b></div>
+     <div class="meta">Admitted <b>${esc(p.admit_date||'-')}</b> &middot; ${esc(p.admit_reason||'')}</div>`;
+
+  baseNote = c.note_under_review.text;
+  document.getElementById('note').value = baseNote;
+
+  const docs = c.documents || [];
+  document.getElementById('docCount').textContent = docs.length + ' documents';
+  document.getElementById('docs').innerHTML = docs.map(d => `
+    <details class="doc">
+      <summary>
+        <span class="dtype">${esc(d.type)}</span>
+        <span class="chip">${esc(d.discipline)}</span>
+        <span class="chip">${esc(d.id)}</span>
+        <span class="chip">${esc((d.timestamp||'').replace('T',' ').slice(0,16))}</span>
+        ${provChip(d.provenance)}
+      </summary>
+      <pre>${esc(d.text)}</pre>
+    </details>`).join('');
+
+  // clear any previous results
+  ['retrieveBox','ledgerBox','findingsBox'].forEach(id => document.getElementById(id).style.display='none');
+  document.getElementById('stages').innerHTML = '';
+  document.getElementById('footprint').textContent = '';
+}
+
+async function loadCharts(){
+  const r = await fetch('/api/charts');
+  const { charts } = await r.json();
+  const sel = document.getElementById('caseSelect');
+  sel.innerHTML = charts.map(c => `<option value="${esc(c.id)}">${esc(c.title)}</option>`).join('');
+  if (charts.length) selectCase(charts[0].id);
+}
+
+async function selectCase(id){
+  if (id === '__imported__' && importedChart){ renderChart(importedChart); return; }
+  const r = await fetch('/api/chart/' + encodeURIComponent(id));
+  renderChart(await r.json());
+}
+
+function renderStages(active, doneSet){
+  document.getElementById('stages').innerHTML = STAGE_DEFS.map(([k,label],i) => {
+    let cls = 'stagepill';
+    if (doneSet.has(k)) cls += ' done';
+    else if (k === active) cls += ' active';
+    const icon = doneSet.has(k) ? '✓' : (k===active ? '<span class="spin"></span>' : '');
+    return `<span class="${cls}"><span class="n">${i+1}</span>${esc(label)} ${icon}</span>`;
+  }).join('');
+}
+
+function findingCard(f){
+  const meta = ACTION_META[f.action] || { label: f.action, color: 'var(--muted)' };
+  const ts = (f.timestamp||'').replace('T',' ').slice(0,16);
+  const pdpm = f.pdpm_impact && f.pdpm_impact.toLowerCase() !== 'none'
+    ? `<div class="pdpm"><b>PDPM / reimbursement:</b> ${esc(f.pdpm_impact)}</div>` : '';
+  const div = document.createElement('div');
+  div.className = 'finding';
+  div.style.borderLeftColor = meta.color;
+  div.innerHTML = `
+    <h3>
+      <span class="badge" style="background:${meta.color}">${esc(meta.label)}</span>
+      ${esc(f.title||'')}
+      <span class="sev">${esc(f.severity||'')} &middot; ${esc(f.verdict||'')}</span>
+    </h3>
+    <div class="claimline">
+      <div class="lbl">The note says</div>
+      <div class="qnote">&ldquo;${esc(f.note_quote)}&rdquo;</div>
+    </div>
+    <div class="claimline">
+      <div class="lbl">But the chart says</div>
+      <div class="qsrc" style="border-left-color:${meta.color}">&ldquo;${esc(f.source_quote)}&rdquo;</div>
+      <div class="srcchip"><span class="chip">${esc(f.source_doc_id)} &middot; ${esc(f.discipline)} &middot; ${esc(ts)}</span></div>
+    </div>
+    ${pdpm}
+    ${f.rationale ? `<div class="rationale">${esc(f.rationale)}</div>` : ''}
+    <div class="lbl" style="margin-top:10px">Drafted ${f.action==='attributed_insert'?'correction':'query'}</div>
+    <div class="drafted">${esc(f.drafted_text)}</div>
+    <div class="draftbar">
+      <span class="to">Addressed to: <b>${esc(f.action_target||'')}</b></span>
+      <button class="approve">Approve &amp; route</button>
+    </div>`;
+  const btn = div.querySelector('.approve');
+  btn.onclick = () => { btn.textContent = '✓ Routed'; btn.classList.add('done'); };
+  return div;
+}
+
+async function run(){
+  const runBtn = document.getElementById('runBtn');
+  const status = document.getElementById('status');
+  runBtn.disabled = true;
+  status.textContent = 'Working…';
+  const done = new Set();
+  const retrieveLog = document.getElementById('retrieveLog');
+  const ledgerEl = document.getElementById('ledger');
+  const findingsEl = document.getElementById('findings');
+  const suppressedEl = document.getElementById('suppressed');
+  retrieveLog.innerHTML = ''; ledgerEl.innerHTML = '';
+  findingsEl.innerHTML = ''; suppressedEl.innerHTML = '';
+  document.getElementById('footprint').textContent = '';
+  document.getElementById('retrieveBox').style.display = 'none';
+  document.getElementById('ledgerBox').style.display = 'none';
+  document.getElementById('findingsBox').style.display = 'none';
+  renderStages('retrieve', done);
+
+  const resp = await fetch('/api/review', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ chart: currentChart, note: document.getElementById('note').value })
+  });
+  const reader = resp.body.getReader();
+  const dec = new TextDecoder();
+  let buf = '';
+  let findingCount = 0;
+
+  const handle = (ev) => {
+    if (ev.type === 'stage') {
+      // mark previous stages done
+      const order = STAGE_DEFS.map(s=>s[0]);
+      const idx = order.indexOf(ev.stage);
+      for (let i=0;i<idx;i++) done.add(order[i]);
+      renderStages(ev.stage, done);
+      if (ev.stage === 'retrieve') document.getElementById('retrieveBox').style.display='block';
+      if (ev.stage === 'extract') document.getElementById('ledgerBox').style.display='block';
+      if (ev.stage === 'reconcile') document.getElementById('findingsBox').style.display='block';
+    } else if (ev.type === 'retrieve_action') {
+      const line = document.createElement('div');
+      line.className = 'line';
+      if (ev.action === 'search') {
+        line.innerHTML = `<span class="k">search_chart</span>(&ldquo;${esc(ev.query)}&rdquo;) &rarr; ${ev.found.map(f=>esc(f.id)).join(', ')||'&mdash;'}`;
+      } else {
+        line.innerHTML = `<span class="read">read_document</span>(${esc(ev.doc_id)}) &mdash; ${esc(ev.doc_type)} &middot; ${esc(ev.discipline)}`;
+      }
+      retrieveLog.appendChild(line);
+    } else if (ev.type === 'ledger') {
+      done.add('extract'); renderStages('reconcile', done);
+      ledgerEl.innerHTML = ev.entries.map(e => `
+        <div class="lrow">
+          <div class="f">${esc(e.fact)}</div>
+          <div class="v">${esc(e.value)}</div>
+          <div class="q">&ldquo;${esc(e.source_quote)}&rdquo; &mdash; ${esc(e.source_doc_id)} &middot; ${esc(e.discipline)}</div>
+        </div>`).join('') || '<div class="empty">No facts extracted.</div>';
+    } else if (ev.type === 'finding') {
+      findingCount++;
+      findingsEl.appendChild(findingCard(ev.finding));
+    } else if (ev.type === 'suppressed') {
+      const s = document.createElement('div');
+      s.className = 'suppressed';
+      s.textContent = `Suppressed (no verbatim citation): ${ev.title}`;
+      suppressedEl.appendChild(s);
+    } else if (ev.type === 'done') {
+      for (const [k] of STAGE_DEFS) done.add(k);
+      renderStages(null, done);
+      const s = ev.summary;
+      document.getElementById('footprint').textContent =
+        `Retrieved ${s.documents_retrieved} documents · ${s.ledger_facts} cited facts · ${s.findings} findings routed.`;
+      if (findingCount === 0)
+        findingsEl.innerHTML = '<div class="empty">No discrepancies found &mdash; the note is consistent with the chart.</div>';
+      status.textContent = 'Done.';
+      runBtn.disabled = false;
+    } else if (ev.type === 'error') {
+      status.textContent = 'Error: ' + ev.message;
+      runBtn.disabled = false;
+    }
+  };
+
+  while (true) {
+    const { value, done: rdone } = await reader.read();
+    if (rdone) break;
+    buf += dec.decode(value, { stream: true });
+    let nl;
+    while ((nl = buf.indexOf('\n\n')) !== -1) {
+      const chunk = buf.slice(0, nl); buf = buf.slice(nl + 2);
+      const line = chunk.split('\n').find(l => l.startsWith('data:'));
+      if (line) { try { handle(JSON.parse(line.slice(5).trim())); } catch(e){} }
+    }
+  }
+  if (runBtn.disabled) { runBtn.disabled = false; status.textContent = 'Done.'; }
+}
+
+document.getElementById('runBtn').onclick = run;
+document.getElementById('resetBtn').onclick = () => { document.getElementById('note').value = baseNote; };
+document.getElementById('caseSelect').onchange = (e) => selectCase(e.target.value);
+
+document.getElementById('importToggle').onclick = () => {
+  const p = document.getElementById('importPanel');
+  p.style.display = p.style.display === 'none' ? 'block' : 'none';
+};
+document.getElementById('importFile').onchange = (e) => {
+  const f = e.target.files[0]; if (!f) return;
+  const rd = new FileReader();
+  rd.onload = () => { document.getElementById('importText').value = rd.result; };
+  rd.readAsText(f);
+};
+document.getElementById('importBtn').onclick = async () => {
+  const status = document.getElementById('importStatus');
+  let obj;
+  try { obj = JSON.parse(document.getElementById('importText').value); }
+  catch(e){ status.textContent = 'Invalid JSON: ' + e.message; return; }
+  status.textContent = 'Importing…';
+  const r = await fetch('/api/import', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ data: obj })
+  });
+  const c = await r.json();
+  if (!r.ok){ status.textContent = 'Error: ' + (c.error||'import failed'); return; }
+  importedChart = c;
+  const sel = document.getElementById('caseSelect');
+  let opt = [...sel.options].find(o => o.value === '__imported__');
+  if (!opt){ opt = document.createElement('option'); opt.value='__imported__'; sel.appendChild(opt); }
+  opt.textContent = 'Imported: ' + (c.patient?.name || 'chart');
+  sel.value = '__imported__';
+  renderChart(c);
+  status.textContent = 'Loaded.';
+  document.getElementById('importPanel').style.display = 'none';
+};
+
+loadCharts();
+</script>
+</body>
+</html>

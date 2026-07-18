@@ -1,0 +1,51 @@
+"""End-to-end smoke test of the pipeline (no server). Prints every event.
+
+    python scripts/smoke.py [chart_id]
+"""
+import os
+import sys
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "backend"))
+
+from chart import load_chart, default_chart  # noqa: E402
+from agent import run_review  # noqa: E402
+
+
+def main():
+    chart_id = sys.argv[1] if len(sys.argv) > 1 else None
+    chart = load_chart(chart_id) if chart_id else default_chart()
+    print(f"Case: {chart['patient']['name']} ({chart['chart_id']})")
+    note = chart["note_under_review"]["text"]
+
+    def emit(ev):
+        t = ev.get("type")
+        if t == "stage":
+            print(f"\n=== STAGE: {ev['stage'].upper()} — {ev['label']} ===")
+        elif t == "retrieve_action":
+            if ev["action"] == "search":
+                print(f"  search_chart({ev['query']!r}) -> {[f['id'] for f in ev['found']]}")
+            else:
+                print(f"  read_document({ev['doc_id']}) [{ev['discipline']}]")
+        elif t == "ledger":
+            print(f"  ledger: {len(ev['entries'])} verified facts")
+            for e in ev["entries"]:
+                print(f"    - {e['fact']}: {e['value']}  [{e['source_doc_id']}]")
+        elif t == "finding":
+            f = ev["finding"]
+            print(f"\n  FINDING [{f['action']}] {f['title']}")
+            print(f"    verdict={f['verdict']} severity={f.get('severity')}")
+            print(f"    note:   {f['note_quote'][:90]!r}")
+            print(f"    source: {f['source_quote'][:90]!r}  ({f['source_doc_id']})")
+            print(f"    -> {f['action_target']}: {f['drafted_text'][:110]}...")
+        elif t == "suppressed":
+            print(f"  SUPPRESSED (uncitable): {ev['title']}")
+        elif t == "done":
+            print(f"\n=== DONE: {ev['summary']} ===")
+        elif t == "error":
+            print(f"\n!!! ERROR: {ev['message']}")
+
+    run_review(chart, note, emit)
+
+
+if __name__ == "__main__":
+    main()
