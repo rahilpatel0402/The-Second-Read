@@ -28,7 +28,7 @@ All three are fully synthetic (no PHI). Each ships the encounter **transcript**,
 
 - **Eleanor Hayes** — 79 F, POD 4 right hip hemiarthroplasty (*the catch*). The note records "steady gait" and anticipates discharge in 5–7 days, but PT (8 ft, maximal assist), nursing (unwitnessed fall), and OT (unsafe transfers) document the opposite. → **Clarification recommended**, functional line flagged, query routed to Physical Therapy; incision exam and post-op day verified consistent and *not* flagged.
 - **Marcus Bell** — 68 M, POD 6 ischemic stroke (*the silence*). The note lists three different assist levels (supervision to walk, moderate assist to transfer, two-person assist for bed mobility) — three **distinct Section GG tasks** that legitimately differ in hemiparesis. → **Signs clean**, the apparent conflict considered and cleared.
-- **Harold Byrne** — 76 M, SNF day 9, new-onset atrial fibrillation (*the stale record*). The note correctly starts apixaban with written cardiology concurrence, but the 14:20 nursing MAR reconciliation still shows anticoagulation on hold — the order never landed. → **Flags the record, not the doctor**; query routed to nursing/pharmacy to reconcile the MAR. Proves the tool is bidirectional.
+- **Harold Byrne** — 76 M, SNF day 9, new-onset atrial fibrillation (*the stale record*). Drafted at 10:05 on morning rounds (apixaban correctly started, cardiology concurring), the note sits in the signature queue until afternoon — by which time the 14:20 nursing MAR reconciliation shows anticoagulation still on hold and no order received: it never landed. → **Flags the record, not the doctor**; query routed to nursing/pharmacy. Proves the tool is bidirectional, and that the draft-to-signature gap is where notes go stale.
 
 ## Run
 

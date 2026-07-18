@@ -223,7 +223,7 @@ function renderEncounter(){
   const p=current.patient||{}, note=current.note_under_review;
   document.getElementById('encTitle').textContent=current.title||p.name||'';
   document.getElementById('encMeta').innerHTML=
-    [`${esc(String(p.age||''))} ${esc(p.sex||'')}`,esc(p.setting||''),`MRN ${esc(p.mrn||'-')}`,esc(p.status||''),`note ${esc(tshort(note.timestamp))}`]
+    [`${esc(String(p.age||''))} ${esc(p.sex||'')}`,esc(p.setting||''),`MRN ${esc(p.mrn||'-')}`,esc(p.status||''),`drafted ${esc(tshort(note.timestamp))} &middot; in signature queue`]
     .filter(Boolean).map(v=>`<span>${v}</span>`).join('<span class="sep">&middot;</span>');
   document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('act',t.dataset.tab===activeTab));
   const w=document.getElementById('tabwrap');

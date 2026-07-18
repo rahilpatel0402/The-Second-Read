@@ -267,7 +267,8 @@ Discussed with the attending at bedside; agree with attending plan to start apix
             "2026-07-18T14:20:00-07:00", """
 Medication administration record reconciled for the 14:00 pass. Active anticoagulation: none. Therapeutic
 anticoagulation remains on hold per admission orders; patient on enoxaparin 40 mg SC daily for DVT
-prophylaxis only. No apixaban on the active MAR. Cardiac telemetry continued, rate controlled.
+prophylaxis only. No apixaban on the active MAR, and no new medication orders received from the provider
+since the morning pass. Cardiac telemetry continued, rate controlled.
 """),
         doc("PT-003", "Physical Therapy", "Physical Therapy", "PT",
             "2026-07-18T11:30:00-07:00", """
