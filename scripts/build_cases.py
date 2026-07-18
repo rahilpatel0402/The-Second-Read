@@ -1,14 +1,17 @@
 """
-Build the hardcoded demo cases for The Second Read.
+Build the two demonstration cases for The Second Read.
 
-Both patients and every document are AUTHORED for the hackathon (no external
-dataset). Each case is engineered so the agent surfaces distinct findings that
-route to different actions - challenging the provider where therapy/nursing/
-pharmacy disagree, and flagging another record as stale where the provider is
-right.
+Both are fully synthetic (no PHI). Each case ships:
+  - transcript:        the doctor-patient encounter (what the scribe heard)
+  - note_under_review: the ambient-generated clinical note, pending signature
+  - documents:         the interdisciplinary chart (PT / Nursing / OT) - the notes
+                       the physician never saw, which the Second Read reconciles against
 
-Edit the text below (or add a third case) and re-run:
-    python scripts/build_cases.py
+Case 1 (Eleanor Hayes)  -> a real drift: functional status contradicted by 3 disciplines.
+Case 2 (Marcus Bell)    -> an apparent conflict that is actually consistent (distinct
+                           Section GG tasks); the Second Read must stay silent.
+
+Edit and re-run:  python scripts/build_cases.py
 """
 import json
 import os
@@ -22,180 +25,153 @@ def doc(id, type, discipline, author, timestamp, text):
             "text": text.strip()}
 
 
-# ============================ CASE 1 ============================
+# ============================ CASE 1 — ELEANOR HAYES ============================
 case1 = {
-    "chart_id": "eleanor-whitfield",
-    "title": "Eleanor Whitfield - SNF rehab after CHF exacerbation & fall",
+    "chart_id": "eleanor-hayes",
+    "title": "Eleanor Hayes - POD 4, right hip hemiarthroplasty",
+    "subtitle": "The catch",
+    "expected": "clarification_recommended",
     "patient": {
-        "name": "Eleanor Whitfield",
-        "dob": "1944-06-18", "age": 81, "sex": "female",
-        "mrn": "SNF-100281",
-        "setting": "Skilled Nursing Facility - Cedar Ridge",
-        "admit_date": "2026-02-10",
-        "admit_reason": "Rehabilitation and deconditioning after CHF exacerbation and a mechanical fall",
+        "name": "Eleanor Hayes", "mrn": "SNF-214402",
+        "age": 79, "sex": "F", "setting": "SNF Rehab, Rm 214-B",
+        "status": "POD 4, R hip hemi", "admit_date": "2026-07-14",
     },
+    "transcript": doc(
+        "TRANSCRIPT", "Doctor-Patient Encounter Transcript", "Provider",
+        "Dr. A. Mensah, attending", "2026-07-18T11:40:00-07:00", """
+DR: Morning, Eleanor. How are you feeling today?
+PT: Oh, better, doctor. Much better than when I came in. I want to go home.
+DR: I can hear that. The hip's healing nicely on the X-ray. How's the walking coming along?
+PT: Good, I think. I've been using the walker. I get around.
+DR: That's what I like to hear. Any pain when you walk?
+PT: A little, but nothing like before. The therapy people have me up and moving.
+DR: Good. And you feel steady on your feet with the walker?
+PT: I manage. I've always been independent, you know. I did my own shopping right up until the fall.
+DR: I remember. That's the goal, get you back to that. Let me listen to your heart and lungs... good.
+    Incision looks clean, no redness. Let me just check the leg. Any numbness or tingling?
+PT: No, no. It feels like my leg again.
+DR: Excellent. Well, everything I'm seeing today looks like you're on track. Keep working with therapy,
+    and if this pace holds we'll start talking about getting you home this week.
+PT: Oh, that would be wonderful. My daughter's been asking.
+DR: Let's aim for it. I'll check in again tomorrow.
+"""),
     "note_under_review": doc(
-        "NOTE-ADMIT", "Provider Admission Note (draft under review)", "Provider",
-        "Dr. Alvarez, MD (attending)", "2026-02-10T11:20:00-08:00",
-        """
-SKILLED NURSING FACILITY ADMISSION NOTE
+        "NOTE", "Generated Clinical Note (DRAFT, pending signature)", "Provider",
+        "Dr. A. Mensah, attending", "2026-07-18T11:52:00-07:00", """
+Subjective: 79-year-old woman POD 4 from right hip hemiarthroplasty, admitted for rehabilitation
+following a mechanical fall at home. Reports feeling substantially improved and is eager to return
+home, where she lived independently prior to admission. Endorses mild incisional pain, well
+controlled, without new numbness or paresthesia. Motivated and engaged with therapy.
 
-Subjective: Mrs. Eleanor Whitfield is an 81-year-old woman admitted for
-rehabilitation and continued skilled nursing care after a hospitalization for a
-congestive heart failure exacerbation complicated by a mechanical fall at home.
-She is eager to get back on her feet and return home. She denies chest pain,
-shortness of breath at rest, dizziness, or new weakness. Sleep has been poor
-since the hospital stay.
+Objective: Afebrile, vitals stable. Cardiovascular: regular rate and rhythm. Pulmonary: clear
+bilaterally. Right hip incision clean, dry, intact, without erythema or drainage. Neurovascularly
+intact distally. Post-operative radiograph reviewed, prosthesis in good alignment.
 
-Objective: Alert and oriented, pleasant and cooperative, in no acute distress.
-Lungs with mild bibasilar crackles, improved from admission. No lower-extremity
-edema today. Patient ambulates approximately 100 feet with a rolling walker and
-standby assist. Transfers with minimal assistance. Skin intact on my examination
-today.
+Functional status: Patient ambulating in hallway with rolling walker, steady gait, tolerating
+therapy well.
 
-Assessment and Plan:
-
-### Deconditioning and rehabilitation after CHF exacerbation
-- Physical and occupational therapy to advance mobility and ADL independence
-- Daily weights and fluid-status monitoring; continue home diuretic regimen
-
-### Insomnia
-- Continue diphenhydramine 50 mg at bedtime as needed for sleep
-
-### Fall prevention
-- Nonskid footwear and call-before-standing education reinforced
-""",
-    ),
+Assessment & Plan: 1. Status post right hip hemiarthroplasty, POD 4, healing appropriately. Continue
+current rehabilitation plan. 2. Functional recovery progressing. Anticipate discharge home in 5-7
+days if current trajectory continues. 3. Continue DVT prophylaxis, pain management, and daily
+therapy. 4. Will reassess tomorrow.
+"""),
     "documents": [
-        doc("PT-EVAL-001", "Physical Therapy Initial Evaluation", "Physical Therapy",
-            "R. Cho, PT, DPT", "2026-02-10T15:30:00-08:00", """
-PHYSICAL THERAPY INITIAL EVALUATION
-Date of service: 2026-02-10 15:30.
+        doc("PT-001", "Physical Therapy", "Physical Therapy", "PT",
+            "2026-07-17T14:00:00-07:00", """
+Gait training attempted. Patient required maximal assist of two for sit-to-stand. Ambulated 8 feet
+with rolling walker and moderate assist before requesting to sit, reporting dizziness and fatigue.
+Session terminated early.
 
-Functional status - Section GG admission performance (drives PDPM PT/OT case-mix):
-  GG0170I Walk 10 feet: 02 - Substantial/maximal assistance
-  GG0170D Sit-to-stand: 01 - Dependent
-  Bed-to-chair transfer: 02 - Substantial/maximal assistance, two staff
-
-Gait/mobility: Patient is non-ambulatory on evaluation and requires maximal
-assistance of two for all transfers; she did not ambulate during this session.
-Standing tolerance is limited to a few seconds with a two-person assist.
-
-Assessment: The patient's mobility is markedly lower than the admission note
-describes. She is not ambulating 100 feet with standby assist. Because the
-Section GG scores set the PDPM PT/OT case-mix, the functional description in the
-note should be reconciled before the MDS is finalized.
+Section GG revised: GG0170I walk 10 feet, 02 substantial/maximal assistance. GG0170D sit to stand,
+02. Discharge readiness not yet established.
 """),
-        doc("RX-CONSULT-001", "Pharmacy Consult - Geriatric Medication Review", "Pharmacy",
-            "S. Patel, PharmD", "2026-02-10T16:45:00-08:00", """
-PHARMACY CONSULT - GERIATRIC MEDICATION REVIEW
-Reviewed admission medication orders for Mrs. Whitfield (age 81).
+        doc("NUR-001", "Nursing", "Nursing", "RN",
+            "2026-07-17T22:15:00-07:00", """
+Patient found seated on floor at bedside at 22:05, attempting to self-transfer to bedside commode
+without calling for assistance. No injury, neuro checks initiated per protocol. Second unwitnessed
+transfer attempt this shift.
 
-SAFETY FLAG: Diphenhydramine is a strongly anticholinergic agent listed on the
-2023 AGS Beers Criteria as potentially inappropriate in adults 65 and older,
-associated with confusion, falls, and delirium. This risk is heightened in a
-patient admitted after a fall.
-
-Recommendation: Avoid diphenhydramine for sleep. Consider nonpharmacologic sleep
-measures and, if needed, a lower-risk agent such as low-dose melatonin. Recommend
-the attending discontinue the diphenhydramine order.
+Bed alarm reactivated, hourly rounding initiated, provider notified via covering line. Fall risk
+care plan updated.
 """),
-        doc("NURSING-SKIN-001", "Nursing Admission Skin Assessment", "Nursing",
-            "M. Torres, RN", "2026-02-10T13:05:00-08:00", """
-NURSING ADMISSION SKIN ASSESSMENT
-Completed: 2026-02-10 13:05 by the admitting RN.
+        doc("OT-001", "Occupational Therapy", "Occupational Therapy", "OT",
+            "2026-07-18T09:30:00-07:00", """
+Toileting and self-care assessment. Patient requires contact guard to standby assist for toilet
+transfers, unable to manage lower-body dressing independently secondary to hip precautions and
+reduced standing tolerance.
 
-Braden score: 14 (moderate risk).
-Skin findings: Admission skin assessment: Stage 2 pressure injury noted to the
-right heel, 1.5 cm, with a shallow open area. Photograph on file. An offloading
-heel boot was applied and a wound-care consult was placed.
-
-This differs from the provider admission note, which documents intact skin.
+Not safe for independent transfers at this time. Recommend continued OT, reassess in 3 days.
 """),
     ],
 }
 
-# ============================ CASE 2 ============================
+# ============================ CASE 2 — MARCUS BELL ============================
 case2 = {
     "chart_id": "marcus-bell",
-    "title": "Marcus Bell - SNF rehab after ischemic stroke",
+    "title": "Marcus Bell - POD 6, ischemic CVA (left hemiparesis)",
+    "subtitle": "The silence",
+    "expected": "supported",
     "patient": {
-        "name": "Marcus Bell",
-        "dob": "1957-09-02", "age": 68, "sex": "male",
-        "mrn": "SNF-100437",
-        "setting": "Skilled Nursing Facility - Cedar Ridge",
-        "admit_date": "2026-03-05",
-        "admit_reason": "Rehabilitation after left MCA ischemic stroke",
+        "name": "Marcus Bell", "mrn": "SNF-118071",
+        "age": 68, "sex": "M", "setting": "SNF Rehab, Rm 118-A",
+        "status": "POD 6, CVA", "admit_date": "2026-07-12",
     },
+    "transcript": doc(
+        "TRANSCRIPT", "Doctor-Patient Encounter Transcript", "Provider",
+        "Dr. S. Varghese, attending", "2026-07-18T10:20:00-07:00", """
+DR: Good morning, Marcus. How's the arm and leg feeling today?
+PT: The leg's coming back. The arm's still stubborn.
+DR: That's often how it goes, the leg leads the way. I hear you did a good lap with the therapist this morning?
+PT: Yeah. Walked down the hall and back with the walker. Girl just had to watch me, didn't have to hold me up.
+DR: That's real progress. A week ago that wasn't happening. How about getting up out of the chair, standing?
+PT: That's the hard part. Getting up, I need a good push. The left side doesn't want to help.
+DR: Right, the weakness on the left makes that push-off tough. That'll keep improving as the strength comes back.
+    Any trouble in the bed at night, turning over?
+PT: The night folks help me shift around. Can't do that on my own yet.
+DR: Understood. That's the left side again, it takes more to move in bed than it does to walk once you're up.
+    Let me examine you... grip on the left is still weak, I can see that. Leg strength is better than last week.
+    Sensation's intact. Good. You're moving in the right direction, Marcus.
+PT: Slow though.
+DR: Slow is fine. Slow and steady is exactly right after a stroke. Keep at it with the therapists.
+"""),
     "note_under_review": doc(
-        "NOTE-ADMIT", "Provider Admission Note (draft under review)", "Provider",
-        "Dr. Alvarez, MD (attending)", "2026-03-05T11:00:00-08:00",
-        """
-SKILLED NURSING FACILITY ADMISSION NOTE
+        "NOTE", "Generated Clinical Note (DRAFT, pending signature)", "Provider",
+        "Dr. S. Varghese, attending", "2026-07-18T10:34:00-07:00", """
+Subjective: 68-year-old man POD 6 from ischemic CVA with residual left hemiparesis, admitted for
+rehabilitation. Reports improving lower extremity function with persistent left upper extremity
+weakness. Endorses difficulty with sit-to-stand secondary to left-sided weakness and requires
+assistance with bed mobility. Engaged and motivated.
 
-Subjective: Mr. Marcus Bell is a 68-year-old man admitted for rehabilitation
-after a left middle cerebral artery ischemic stroke. He has residual right-sided
-weakness and reports his speech and swallowing "feel almost back to normal." He
-is motivated and independent-minded.
+Objective: Afebrile, vitals stable. Cardiovascular: regular rate and rhythm. Neurologic: left grip
+strength diminished, left lower extremity strength improved from prior exam, sensation intact
+bilaterally, no new focal deficit.
 
-Objective: Alert, oriented, mild expressive aphasia, mild right facial droop.
-Right upper and lower extremity strength 4-/5. He fed himself lunch without
-obvious difficulty during my visit. Diet: regular, no restrictions. Patient is
-modified independent with activities of daily living.
+Functional status: Ambulates 150 feet with rolling walker and supervision. Requires moderate assist
+for transfers secondary to left-sided weakness. Progressing appropriately.
 
-Assessment and Plan:
-
-### Ischemic stroke, cardioembolic (atrial fibrillation)
-- Started apixaban 5 mg twice daily for cardioembolic stroke prevention
-- Continue rehabilitation with physical, occupational, and speech therapy
-
-### Rehabilitation
-- Advance mobility and self-care as tolerated
-""",
-    ),
+Assessment & Plan: 1. Ischemic CVA with left hemiparesis, POD 6, improving. Continue intensive
+rehabilitation. 2. Left upper extremity weakness limiting transfers and bed mobility. Continue PT,
+OT. 3. Continue secondary stroke prevention, antiplatelet and statin therapy. 4. Reassess in 2 days.
+"""),
     "documents": [
-        doc("SLP-EVAL-001", "Speech-Language Pathology - Bedside Swallow Evaluation", "Physical Therapy",
-            "K. Adeyemi, MS, CCC-SLP", "2026-03-05T16:00:00-08:00", """
-SPEECH-LANGUAGE PATHOLOGY - BEDSIDE SWALLOW EVALUATION
-Date of service: 2026-03-05 16:00.
-
-Speech-language pathology bedside swallow evaluation reveals moderate
-oropharyngeal dysphagia with delayed swallow initiation and overt signs of
-aspiration on thin liquids (wet vocal quality, coughing after swallows).
-Recommend nectar-thick liquids and a mechanical soft diet with aspiration
-precautions and supervision at meals.
-
-A regular, unrestricted diet is not safe for this patient at this time.
+        doc("PT-002", "Physical Therapy", "Physical Therapy", "PT",
+            "2026-07-18T08:45:00-07:00", """
+Ambulated 150 feet with rolling walker, supervision only, no physical assist required. Good
+endurance, no loss of balance, one standing rest break. Gait speed improving. GG0170I walk 10 feet,
+04 supervision. Continue gait training, advancing distance.
 """),
-        doc("MAR-001", "Medication Administration Record (carried from prior records)", "Nursing",
-            "Prior-records transfer packet", "2026-03-03T09:00:00-08:00", """
-MEDICATION ADMINISTRATION RECORD (carried from prior records)
-Last reconciled: 2026-03-03 (acute hospital, before the SNF transfer).
-
-Active medications:
-  - aspirin 81 mg once daily
-  - atorvastatin 40 mg once daily
-  - lisinopril 10 mg once daily
-
-No oral anticoagulant listed. This MAR has not been reconciled with the SNF
-admission orders.
+        doc("OT-002", "Occupational Therapy", "Occupational Therapy", "OT",
+            "2026-07-18T09:15:00-07:00", """
+Transfer and self-care assessment. Patient requires moderate assist for sit-to-stand and toilet
+transfers secondary to left upper extremity weakness limiting push-off and grab-bar use. Standing
+tolerance improving. GG0170D sit to stand, 03 moderate assistance. Continue OT, focus on transfer
+mechanics.
 """),
-        doc("OT-EVAL-001", "Occupational Therapy Initial Evaluation", "Occupational Therapy",
-            "D. Fischer, OTR/L", "2026-03-05T15:20:00-08:00", """
-OCCUPATIONAL THERAPY INITIAL EVALUATION
-Date of service: 2026-03-05 15:20.
-
-Self-care - Section GG admission performance:
-  GG0130A Eating: 04 - Supervision/touching assistance
-  GG0130B Oral hygiene: 03 - Partial/moderate assistance
-  GG0130C Toileting hygiene: 03 - Partial/moderate assistance
-  Upper-body dressing: 03 - Partial/moderate assistance
-  Lower-body dressing and bathing: 03 - Partial/moderate assistance
-
-Occupational therapy evaluation: patient requires moderate assistance for upper-
-and lower-body dressing and bathing; he is not independent with ADLs. The Section
-GG self-care scores support a substantially higher assistance level than the
-admission note's "modified independent" description, and drive the PDPM case-mix.
+        doc("NUR-002", "Nursing", "Nursing", "RN",
+            "2026-07-18T06:40:00-07:00", """
+Overnight care. Patient required two-person assist for repositioning and bed mobility per care plan
+secondary to left hemiparesis. Assisted with turning q2h. No skin breakdown. Tolerated night without
+complaint.
 """),
     ],
 }
@@ -207,7 +183,7 @@ def main():
         path = os.path.join(OUT_DIR, f"{case['chart_id']}.json")
         with open(path, "w", encoding="utf-8") as f:
             json.dump(case, f, indent=2, ensure_ascii=False)
-        print(f"Wrote {path}  ({len(case['documents'])} docs)")
+        print(f"Wrote {path}  ({len(case['documents'])} interdisciplinary notes)")
 
 
 if __name__ == "__main__":

@@ -5,491 +5,409 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>The Second Read</title>
 <style>
-  :root {
-    --bg: #f6f7f9; --panel: #ffffff; --ink: #14181f; --muted: #5b6472;
-    --line: #e4e7ec; --accent: #1f6feb; --accent-ink: #0b3d91;
-    --strike: #c92a2a; --insert: #b8860b; --therapy: #1f6feb;
-    --nursing: #0d9488; --provider: #7c3aed; --stale: #d9480f;
-    --good: #2f9e44; --chip: #eef1f5; --code-bg: #0f1420; --code-ink: #d7e2f4;
-    --shadow: 0 1px 2px rgba(16,24,40,.06), 0 4px 16px rgba(16,24,40,.06);
+  :root{
+    --bg:#f5f4f0; --panel:#ffffff; --ink:#1c2530; --muted:#5f6b7a; --faint:#8a94a2;
+    --line:#e5e3dc; --navy:#1f3a5f; --navy-ink:#16304f; --accent:#c05621;
+    --flag:#fbe7b2; --flag-line:#e0a800; --warn-bg:#fdf6e3;
+    --good:#2f8f5b; --good-bg:#eaf6ee; --evline:#b23b3b;
+    --chip:#eeece5; --code:#0f1622; --code-ink:#d7e2f4;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+    --shadow:0 1px 2px rgba(20,30,45,.05),0 6px 20px rgba(20,30,45,.06);
   }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #0d1117; --panel: #161b22; --ink: #e6edf3; --muted: #9aa4b2;
-      --line: #2a313c; --accent: #4c8dff; --chip: #1f2630; --code-bg: #0b0f16;
-      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 4px 16px rgba(0,0,0,.35);
-    }
+  @media (prefers-color-scheme:dark){
+    :root{ --bg:#0e1117; --panel:#161b22; --ink:#e6edf3; --muted:#9aa4b2; --faint:#6b7580;
+      --line:#2a313c; --navy:#7aa2d6; --navy-ink:#9cc0ee; --flag:#4a3f18; --flag-line:#c9a227;
+      --warn-bg:#211d12; --good:#4cc38a; --good-bg:#12241a; --chip:#1f2630; --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.35);}
   }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0; background: var(--bg); color: var(--ink);
-    font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  }
-  .wrap { max-width: 1180px; margin: 0 auto; padding: 22px 20px 80px; }
-  header.top { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
-  .brand { font-size: 26px; font-weight: 750; letter-spacing: -.02em; }
-  .brand .dot { color: var(--accent); }
-  .tag { color: var(--muted); font-size: 14px; }
-  .banner {
-    margin-top: 16px; background: var(--panel); border: 1px solid var(--line);
-    border-radius: 12px; padding: 14px 18px; display: flex; gap: 26px;
-    flex-wrap: wrap; box-shadow: var(--shadow);
-  }
-  .banner .who { font-weight: 700; font-size: 16px; }
-  .banner .meta { color: var(--muted); font-size: 13px; }
-  .banner b { color: var(--ink); font-weight: 600; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  a{color:inherit}
+  .wrap{max-width:1220px;margin:0 auto;padding:22px 20px 90px}
+  header.top{border-bottom:2px solid var(--navy);padding-bottom:12px}
+  .brand{font:750 27px/1 var(--serif);letter-spacing:-.01em}
+  .brand .dot{color:var(--accent)}
+  .tag{color:var(--muted);font-size:14px;margin-top:6px}
+  .thesis{color:var(--faint);font-size:12.5px;font-style:italic;margin-top:4px}
 
-  .controls { margin-top: 14px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-  .controls label { font-size: 13px; color: var(--muted); display:flex; gap:7px; align-items:center; }
-  select#caseSelect {
-    font-size: 14px; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--line);
-    background: var(--panel); color: var(--ink); min-width: 300px;
-  }
-  .importpanel { margin-top: 12px; }
-  .importpanel textarea {
-    width:100%; min-height: 120px; border:1px solid var(--line); border-radius:8px; padding:10px;
-    font: 12px/1.5 ui-monospace, Menlo, Consolas, monospace; background: var(--bg); color: var(--ink);
-  }
-  .importpanel .row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-top:8px; }
+  .grid{display:grid;grid-template-columns:300px 1fr;gap:20px;margin-top:20px}
+  @media (max-width:860px){.grid{grid-template-columns:1fr}}
 
-  .grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: 18px; margin-top: 18px; }
-  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
-  .panel {
-    background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
-    box-shadow: var(--shadow); overflow: hidden;
-  }
-  .panel h2 {
-    margin: 0; padding: 13px 16px; font-size: 13px; text-transform: uppercase;
-    letter-spacing: .06em; color: var(--muted); border-bottom: 1px solid var(--line);
-    display:flex; justify-content: space-between; align-items:center;
-  }
-  .panel .body { padding: 14px 16px; }
-  textarea#note {
-    width: 100%; min-height: 260px; resize: vertical; border: 1px solid var(--line);
-    border-radius: 8px; padding: 12px; font: 13px/1.55 "SFMono-Regular", ui-monospace, Menlo, Consolas, monospace;
-    background: var(--bg); color: var(--ink);
-  }
-  .run {
-    margin-top: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
-  }
-  button.primary {
-    background: var(--accent); color: #fff; border: 0; border-radius: 8px;
-    padding: 11px 18px; font-size: 15px; font-weight: 650; cursor: pointer;
-  }
-  button.primary:disabled { opacity: .55; cursor: default; }
-  button.ghost {
-    background: transparent; color: var(--muted); border: 1px solid var(--line);
-    border-radius: 8px; padding: 10px 14px; font-size: 13px; cursor: pointer;
-  }
-  .hint { color: var(--muted); font-size: 12.5px; }
+  .side h3{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:2px 0 10px}
+  .case{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:12px 13px;margin-bottom:11px;cursor:pointer;box-shadow:var(--shadow);border-left:4px solid transparent}
+  .case:hover{border-color:var(--navy)}
+  .case.sel{border-left-color:var(--accent)}
+  .case .nm{font:650 16px/1.2 var(--serif)}
+  .case .dx{font-size:12.5px;color:var(--muted);margin-top:3px}
+  .case .st{margin-top:7px;display:flex;gap:6px;flex-wrap:wrap}
+  .pill{font-size:11px;padding:2px 8px;border-radius:999px;background:var(--chip);color:var(--muted);border:1px solid var(--line)}
+  .imp{margin-top:6px}
+  .linkbtn{background:none;border:0;color:var(--navy);font-size:12.5px;cursor:pointer;padding:4px 0;text-decoration:underline}
 
-  .doc { border: 1px solid var(--line); border-radius: 9px; margin-bottom: 9px; }
-  .doc summary {
-    list-style: none; cursor: pointer; padding: 10px 12px; display: flex;
-    gap: 10px; align-items: center; flex-wrap: wrap;
-  }
-  .doc summary::-webkit-details-marker { display: none; }
-  .doc .dtype { font-weight: 620; font-size: 13.5px; }
-  .doc pre {
-    margin: 0; padding: 10px 12px; border-top: 1px solid var(--line);
-    white-space: pre-wrap; font: 12px/1.5 ui-monospace, Menlo, Consolas, monospace;
-    color: var(--ink); background: var(--bg);
-  }
-  .chip {
-    font-size: 11px; padding: 2px 8px; border-radius: 999px; background: var(--chip);
-    color: var(--muted); border: 1px solid var(--line); white-space: nowrap;
-  }
-  .chip.abridge { color: var(--nursing); }
-  .chip.authored { color: var(--insert); }
+  .enc{background:var(--panel);border:1px solid var(--line);border-radius:13px;box-shadow:var(--shadow);overflow:hidden}
+  .enchead{padding:16px 20px 0}
+  .enchead .h1{font:600 24px/1.15 var(--serif);letter-spacing:-.01em}
+  .enchead .meta{color:var(--muted);font-size:13px;margin-top:6px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .enchead .meta .sep{color:var(--faint)}
+  .tabs{display:flex;gap:2px;margin-top:14px;border-bottom:1px solid var(--line);padding:0 20px}
+  .tab{padding:11px 14px;font-size:14px;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+  .tab.act{color:var(--ink);border-bottom-color:var(--accent);font-weight:650}
+  .tabwrap{padding:18px 20px 20px}
+
+  pre.doc{margin:0;white-space:pre-wrap;font:13.5px/1.62 var(--serif);color:var(--ink)}
+  .transcript .ln{margin:0 0 9px}
+  .transcript .sp{font-weight:700;color:var(--navy)}
+
+  .notearea{width:100%;min-height:300px;resize:vertical;border:1px solid var(--line);border-radius:9px;padding:14px;
+    font:13.5px/1.6 var(--serif);background:var(--bg);color:var(--ink)}
+  .signbar{margin-top:14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  .sign{background:var(--navy);color:#fff;border:0;border-radius:9px;padding:12px 22px;font-size:15px;font-weight:650;cursor:pointer}
+  .sign:disabled{opacity:.6;cursor:default}
+  .ghost{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:8px;padding:10px 14px;font-size:13px;cursor:pointer}
+  .hint{color:var(--faint);font-size:12.5px}
+
+  /* interdisciplinary */
+  .idoc{border:1px solid var(--line);border-radius:9px;overflow:hidden;margin-bottom:12px}
+  .idoc .bar{background:var(--navy);color:#fff;padding:8px 12px;font-size:12px;text-transform:uppercase;letter-spacing:.05em;display:flex;justify-content:space-between}
+  .idoc .txt{padding:11px 13px;white-space:pre-wrap;font:13px/1.55 var(--serif)}
+  .redacted{filter:blur(4px);opacity:.5;user-select:none}
+  .idnote{font-size:12.5px;color:var(--muted);margin-bottom:10px}
 
   /* stage tracker */
-  .stages { display: flex; gap: 8px; flex-wrap: wrap; margin: 4px 0 6px; }
-  .stagepill {
-    font-size: 12px; padding: 6px 11px; border-radius: 999px; border: 1px solid var(--line);
-    color: var(--muted); background: var(--panel); display: flex; gap: 7px; align-items: center;
-  }
-  .stagepill.active { color: var(--accent); border-color: var(--accent); font-weight: 650; }
-  .stagepill.done { color: var(--good); border-color: var(--good); }
-  .stagepill .n { font-variant-numeric: tabular-nums; opacity: .7; }
+  .stages{display:flex;gap:7px;flex-wrap:wrap;margin:2px 0 8px}
+  .sp2{font-size:11.5px;padding:5px 10px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--panel)}
+  .sp2.active{color:var(--accent);border-color:var(--accent);font-weight:650}
+  .sp2.done{color:var(--good);border-color:var(--good)}
+  .spin{width:11px;height:11px;border:2px solid var(--line);border-top-color:var(--accent);border-radius:50%;display:inline-block;animation:sp .7s linear infinite;vertical-align:-1px}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  details.reason{margin-top:8px}
+  details.reason summary{cursor:pointer;font-size:12.5px;color:var(--muted)}
+  .log{font:12px/1.5 ui-monospace,Menlo,Consolas,monospace;color:var(--muted);margin-top:6px}
+  .log .k{color:var(--navy)} .log .r{color:var(--good)}
+  .ledger{display:grid;gap:5px;margin-top:6px}
+  .lrow{border-left:3px solid var(--line);padding:5px 9px;background:var(--bg);border-radius:5px;font-size:12.5px}
+  .lrow b{font-weight:650}
 
-  .log { font: 12.5px/1.5 ui-monospace, Menlo, Consolas, monospace; color: var(--muted); }
-  .log .line { padding: 3px 0; }
-  .log .k { color: var(--accent); }
-  .log .read { color: var(--nursing); }
+  /* result: note echo */
+  .out{margin-top:20px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:13px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:16px}
+  .noteecho .hd{display:flex;justify-content:space-between;align-items:center;padding:13px 18px;border-bottom:1px solid var(--line)}
+  .noteecho .who{font:650 16px/1.1 var(--serif)}
+  .noteecho .who small{display:block;color:var(--muted);font:400 12px/1.3 -apple-system,sans-serif;margin-top:2px}
+  .noteecho .kind{color:var(--faint);font-size:12.5px}
+  .noteecho .bd{padding:14px 18px}
+  pre.notehl{margin:0;white-space:pre-wrap;font:13.5px/1.62 var(--serif)}
+  pre.notehl mark{background:var(--flag);color:inherit;border-bottom:2px solid var(--flag-line);padding:1px 2px;border-radius:2px}
+  .verified{margin-top:10px;font-size:12.5px;color:var(--muted);display:flex;gap:7px;align-items:flex-start}
+  .verified .i{color:var(--good);font-weight:700}
 
-  .ledger { display: grid; gap: 6px; }
-  .lrow { display: grid; grid-template-columns: 1fr; gap: 3px; border-left: 3px solid var(--line);
-          padding: 7px 10px; background: var(--bg); border-radius: 6px; }
-  .lrow .f { font-weight: 620; font-size: 13px; }
-  .lrow .v { font-size: 13px; }
-  .lrow .q { font-size: 12px; color: var(--muted); font-style: italic; }
+  /* finding card */
+  .finding{border:1px solid var(--flag-line);border-radius:13px;background:var(--warn-bg);box-shadow:var(--shadow);margin-bottom:16px;overflow:hidden}
+  .finding .fh{display:flex;justify-content:space-between;align-items:center;padding:13px 18px;border-bottom:1px solid var(--line)}
+  .finding .fh .t{font-weight:700;display:flex;gap:9px;align-items:center}
+  .finding .fh .warn{color:var(--flag-line);font-size:18px}
+  .conf{font:12px ui-monospace,Menlo,Consolas,monospace;color:var(--muted)}
+  .finding .fb{padding:14px 18px}
+  .headline{font-size:14.5px;margin:0 0 12px}
+  .ev{border:1px solid var(--line);border-radius:9px;background:var(--panel);padding:10px 12px;margin-bottom:9px}
+  .ev .evh{display:flex;justify-content:space-between;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:4px}
+  .ev .evq{font-size:13.5px;color:var(--evline)}
+  .why{background:var(--flag);border-radius:9px;padding:11px 13px;font-size:13px;margin:6px 0 12px}
+  .why b{display:block;text-transform:uppercase;font-size:11px;letter-spacing:.05em;color:var(--navy-ink);margin-bottom:3px}
+  .qbox .lbl2{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);border-left:3px solid var(--navy);padding-left:8px;margin-bottom:6px}
+  .draft{white-space:pre-wrap;font:12.5px/1.55 var(--serif);color:var(--ink);border-left:3px solid var(--navy);padding:0 0 0 8px;margin:0 0 12px}
+  .acts{display:flex;gap:9px;flex-wrap:wrap}
+  .btn{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:9px 14px;font-size:13px;cursor:pointer;color:var(--ink)}
+  .btn.primary{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+  .btn.routed{color:var(--good);border-color:var(--good);cursor:default}
 
-  .finding {
-    border: 1px solid var(--line); border-left-width: 5px; border-radius: 10px;
-    padding: 14px 16px; margin-bottom: 14px; background: var(--panel);
-  }
-  .finding h3 { margin: 0 0 8px; font-size: 16px; display:flex; align-items:center; gap:10px; flex-wrap: wrap;}
-  .badge {
-    font-size: 11px; font-weight: 750; letter-spacing: .04em; text-transform: uppercase;
-    padding: 4px 9px; border-radius: 6px; color: #fff;
-  }
-  .sev { font-size: 11px; padding: 2px 8px; border-radius: 999px; border:1px solid var(--line); color: var(--muted);}
-  .claimline { margin: 8px 0; }
-  .lbl { font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-bottom: 2px; }
-  .qnote {
-    border-left: 3px solid var(--strike); padding: 6px 10px; background: rgba(201,42,42,.06);
-    border-radius: 4px; font-size: 13.5px;
-  }
-  .qsrc {
-    border-left: 3px solid var(--therapy); padding: 6px 10px; background: rgba(31,111,235,.06);
-    border-radius: 4px; font-size: 13.5px;
-  }
-  .srcchip { margin-top: 6px; }
-  .srcchip .chip { background: var(--code-bg); color: var(--code-ink); border-color: transparent; }
-  .pdpm { margin-top: 8px; font-size: 13px; color: var(--stale); }
-  .pdpm b { color: var(--stale); }
-  .rationale { margin-top: 8px; font-size: 13px; color: var(--muted); }
-  .drafted {
-    margin-top: 10px; background: var(--code-bg); color: var(--code-ink); border-radius: 8px;
-    padding: 12px 14px; font: 12.5px/1.55 ui-monospace, Menlo, Consolas, monospace; white-space: pre-wrap;
-  }
-  .draftbar { margin-top: 8px; display:flex; gap: 8px; align-items:center; }
-  .draftbar .to { font-size: 12px; color: var(--muted); }
-  .approve { background: var(--good); color:#fff; border:0; border-radius:7px; padding: 7px 12px; font-size:12.5px; font-weight:650; cursor:pointer;}
-  .approve.done { background: transparent; color: var(--good); border:1px solid var(--good); cursor: default; }
+  /* signed (supported) card */
+  .signed{border:1px solid var(--good);background:var(--good-bg)}
+  .signed .fh{border-bottom-color:rgba(47,143,91,.25)}
+  .signed .t{color:var(--good)}
+  .cleared summary{cursor:pointer;font-size:13.5px;color:var(--ink);padding:11px 18px}
+  .cleared .cbody{padding:0 18px 16px}
+  .cchk{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-top:1px solid var(--line);font-size:13.5px}
+  .cchk .g{color:var(--good);margin-right:8px}
+  .cchk .ts{color:var(--faint);font:11px ui-monospace,monospace}
+  .cwhy{font-size:13px;color:var(--muted);margin:8px 0}
 
-  .suppressed { font-size: 12px; color: var(--muted); font-style: italic; padding: 4px 0; }
-  .empty { color: var(--muted); font-size: 14px; }
-  .footprint { margin-top: 8px; font-size: 12.5px; color: var(--muted); }
-  .spin { width: 13px; height: 13px; border: 2px solid var(--line); border-top-color: var(--accent);
-          border-radius: 50%; display:inline-block; animation: sp .7s linear infinite; }
-  @keyframes sp { to { transform: rotate(360deg); } }
+  .banner-signed{background:var(--good-bg);border:1px solid var(--good);color:var(--good);border-radius:9px;padding:10px 14px;font-weight:600;margin-bottom:14px}
+  .importpanel{margin-top:12px}
+  .importpanel textarea{width:100%;min-height:100px;border:1px solid var(--line);border-radius:8px;padding:9px;font:12px ui-monospace,Menlo,Consolas,monospace;background:var(--bg);color:var(--ink)}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header class="top">
     <div class="brand">The Second Read<span class="dot">.</span></div>
-    <div class="tag">Every scribe writes down what the doctor says. This one reads it back against the rest of the chart&nbsp;&mdash; and challenges it.</div>
+    <div class="tag">Does today&rsquo;s note still describe today&rsquo;s patient? The Second Read is embedded in the signature.</div>
+    <div class="thesis">&ldquo;The scribe only heard the doctor&rsquo;s visit. The Second Read reads everyone else&rsquo;s &mdash; the nurse at 10pm, the therapist at 2pm &mdash; and that&rsquo;s where the patient&rsquo;s real story is.&rdquo;</div>
   </header>
 
-  <div class="banner" id="banner"></div>
-
-  <div class="controls">
-    <label>Case
-      <select id="caseSelect"></select>
-    </label>
-    <button class="ghost" id="importToggle">Import data&hellip;</button>
-    <span class="hint" id="importHint"></span>
-  </div>
-
-  <div class="panel importpanel" id="importPanel" style="display:none">
-    <h2>Import a chart</h2>
-    <div class="body">
-      <div class="hint">Paste a native chart JSON (with <code>note_under_review</code> + <code>documents</code>) or an Abridge FHIR record (with <code>patient_context</code> + <code>note</code> + <code>transcript</code>), or choose a <code>.json</code> file.</div>
-      <textarea id="importText" spellcheck="false" placeholder='{ "note_under_review": {...}, "documents": [...] }'></textarea>
-      <div class="row">
-        <input type="file" id="importFile" accept=".json,application/json" />
-        <button class="primary" id="importBtn">Load imported chart</button>
-        <span class="hint" id="importStatus"></span>
-      </div>
-    </div>
-  </div>
-
   <div class="grid">
-    <section class="panel">
-      <h2>Note under review <span class="hint">editable &mdash; try changing a claim</span></h2>
-      <div class="body">
-        <textarea id="note" spellcheck="false"></textarea>
-        <div class="run">
-          <button class="primary" id="runBtn">Run The Second Read</button>
-          <button class="ghost" id="resetBtn">Reset note</button>
-          <span class="hint" id="status"></span>
+    <aside class="side">
+      <h3>Cases</h3>
+      <div id="caseList"></div>
+      <div class="imp">
+        <button class="linkbtn" id="importToggle">Import a chart&hellip;</button>
+        <div class="importpanel card" id="importPanel" style="display:none;padding:12px">
+          <div class="hint" style="margin-bottom:6px">Paste a native chart JSON or an Abridge FHIR record.</div>
+          <textarea id="importText" spellcheck="false" placeholder='{ "note_under_review": {...}, "documents": [...] }'></textarea>
+          <div style="margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <input type="file" id="importFile" accept=".json" style="font-size:12px"/>
+            <button class="ghost" id="importBtn">Load</button>
+            <span class="hint" id="importStatus"></span>
+          </div>
         </div>
       </div>
-    </section>
+    </aside>
 
-    <section class="panel">
-      <h2>The rest of the chart <span class="hint" id="docCount"></span></h2>
-      <div class="body" id="docs"></div>
-    </section>
+    <main>
+      <section class="enc">
+        <div class="enchead">
+          <div class="h1" id="encTitle"></div>
+          <div class="meta" id="encMeta"></div>
+        </div>
+        <div class="tabs" id="tabs">
+          <div class="tab act" data-tab="note">Clinical note</div>
+          <div class="tab" data-tab="transcript">Transcript</div>
+          <div class="tab" data-tab="chart">Interdisciplinary chart</div>
+        </div>
+        <div class="tabwrap" id="tabwrap"></div>
+      </section>
+
+      <div class="out" id="out"></div>
+    </main>
   </div>
-
-  <section class="panel" style="margin-top:18px">
-    <h2>The Second Read &mdash; retrieve &rarr; extract &rarr; reconcile &rarr; route &rarr; act</h2>
-    <div class="body">
-      <div class="stages" id="stages"></div>
-
-      <div id="retrieveBox" style="display:none">
-        <div class="lbl" style="margin:10px 0 4px">Retrieve &mdash; the agent chooses what to pull</div>
-        <div class="log" id="retrieveLog"></div>
-      </div>
-
-      <div id="ledgerBox" style="display:none">
-        <div class="lbl" style="margin:14px 0 6px">Cited state ledger &mdash; every fact carries a source quote</div>
-        <div class="ledger" id="ledger"></div>
-      </div>
-
-      <div id="findingsBox" style="display:none">
-        <div class="lbl" style="margin:16px 0 8px">Findings &mdash; routed and drafted for approval</div>
-        <div id="findings"></div>
-        <div id="suppressed"></div>
-      </div>
-
-      <div class="footprint" id="footprint"></div>
-    </div>
-  </section>
 </div>
 
 <script>
-const ACTION_META = {
-  strike:           { label: "Strike",            color: "var(--strike)" },
-  attributed_insert:{ label: "Attributed insert", color: "var(--insert)" },
-  query_therapy:    { label: "Query → Therapy", color: "var(--therapy)" },
-  query_nursing:    { label: "Query → Nursing", color: "var(--nursing)" },
-  query_provider:   { label: "Query → Provider", color: "var(--provider)" },
-  flag_stale:       { label: "Flag record stale", color: "var(--stale)" },
-};
-const STAGE_DEFS = [
-  ["retrieve","Retrieve"],["extract","Extract"],["reconcile","Reconcile"],
-  ["route","Route"],["act","Act"],
-];
+const STAGES=[["retrieve","Retrieve"],["extract","Extract"],["reconcile","Reconcile"],["route","Route"],["act","Act"]];
+const ACTION_LABEL={query_therapy:"Physical Therapy",query_nursing:"Nursing",query_provider:"Provider",flag_stale:"record owner",attributed_insert:"Provider",strike:"Provider"};
+let cases=[], current=null, importedChart=null, activeTab="note", noteDraft="";
 
-let baseNote = "";
-let currentChart = null;     // the full chart object under review
-let importedChart = null;    // holds an imported chart, if any
+function esc(s){return (s||"").replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
+function tshort(t){return (t||"").replace('T',' ').slice(0,16);}
 
-function esc(s){ return (s||"").replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
-
-function provChip(p){
-  if (p === 'authored-for-demo') return '<span class="chip authored">authored for demo</span>';
-  if (p === 'abridge-synthetic') return '<span class="chip abridge">Abridge dataset</span>';
-  if (p === 'imported') return '<span class="chip abridge">imported</span>';
-  return '';
-}
-
-function renderChart(c){
-  currentChart = c;
-  const p = c.patient || {};
-  document.getElementById('banner').innerHTML =
-    `<div><div class="who">${esc(p.name||'')}</div>
-       <div class="meta">${esc(p.setting||'')}</div></div>
-     <div class="meta">Age <b>${esc(String(p.age||'-'))}</b> &middot; DOB <b>${esc(p.dob||'-')}</b> &middot; MRN <b>${esc(p.mrn||'-')}</b></div>
-     <div class="meta">Admitted <b>${esc(p.admit_date||'-')}</b> &middot; ${esc(p.admit_reason||'')}</div>`;
-
-  baseNote = c.note_under_review.text;
-  document.getElementById('note').value = baseNote;
-
-  const docs = c.documents || [];
-  document.getElementById('docCount').textContent = docs.length + ' documents';
-  document.getElementById('docs').innerHTML = docs.map(d => `
-    <details class="doc">
-      <summary>
-        <span class="dtype">${esc(d.type)}</span>
-        <span class="chip">${esc(d.discipline)}</span>
-        <span class="chip">${esc(d.id)}</span>
-        <span class="chip">${esc((d.timestamp||'').replace('T',' ').slice(0,16))}</span>
-        ${provChip(d.provenance)}
-      </summary>
-      <pre>${esc(d.text)}</pre>
-    </details>`).join('');
-
-  // clear any previous results
-  ['retrieveBox','ledgerBox','findingsBox'].forEach(id => document.getElementById(id).style.display='none');
-  document.getElementById('stages').innerHTML = '';
-  document.getElementById('footprint').textContent = '';
-}
-
-async function loadCharts(){
-  const r = await fetch('/api/charts');
-  const { charts } = await r.json();
-  const sel = document.getElementById('caseSelect');
-  sel.innerHTML = charts.map(c => `<option value="${esc(c.id)}">${esc(c.title)}</option>`).join('');
-  if (charts.length) selectCase(charts[0].id);
+async function loadCases(){
+  const r=await fetch('/api/charts'); cases=(await r.json()).charts;
+  document.getElementById('caseList').innerHTML=cases.map(c=>`
+    <div class="case" data-id="${esc(c.id)}">
+      <div class="nm">${esc(c.patient_name)}</div>
+      <div class="dx">${esc(c.subtitle||'')}</div>
+      <div class="st">
+        <span class="pill">${esc(String(c.age||''))}${esc(c.sex||'')}</span>
+        <span class="pill">${esc(c.status||'')}</span>
+      </div>
+    </div>`).join('');
+  document.querySelectorAll('.case').forEach(el=>el.onclick=()=>selectCase(el.dataset.id));
+  if(cases.length) selectCase(cases[0].id);
 }
 
 async function selectCase(id){
-  if (id === '__imported__' && importedChart){ renderChart(importedChart); return; }
-  const r = await fetch('/api/chart/' + encodeURIComponent(id));
-  renderChart(await r.json());
+  let chart;
+  if(id==='__imported__' && importedChart){ chart=importedChart; }
+  else { const r=await fetch('/api/chart/'+encodeURIComponent(id)); chart=await r.json(); }
+  current=chart; noteDraft=chart.note_under_review.text; activeTab="note";
+  document.querySelectorAll('.case').forEach(el=>el.classList.toggle('sel',el.dataset.id===id));
+  renderEncounter();
+  document.getElementById('out').innerHTML='';
 }
 
-function renderStages(active, doneSet){
-  document.getElementById('stages').innerHTML = STAGE_DEFS.map(([k,label],i) => {
-    let cls = 'stagepill';
-    if (doneSet.has(k)) cls += ' done';
-    else if (k === active) cls += ' active';
-    const icon = doneSet.has(k) ? '✓' : (k===active ? '<span class="spin"></span>' : '');
-    return `<span class="${cls}"><span class="n">${i+1}</span>${esc(label)} ${icon}</span>`;
-  }).join('');
+function renderEncounter(){
+  const p=current.patient||{};
+  document.getElementById('encTitle').textContent=current.title||p.name||'';
+  const note=current.note_under_review;
+  document.getElementById('encMeta').innerHTML=
+    [`${esc(String(p.age||''))} ${esc(p.sex||'')}`,esc(p.setting||''),`MRN ${esc(p.mrn||'-')}`,esc(p.status||''),
+     `note ${esc(tshort(note.timestamp))}`].filter(Boolean).map(esc=>`<span>${esc}</span>`).join('<span class="sep">&middot;</span>');
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('act',t.dataset.tab===activeTab));
+  const w=document.getElementById('tabwrap');
+  if(activeTab==='note') w.innerHTML=noteTab();
+  else if(activeTab==='transcript') w.innerHTML=transcriptTab();
+  else w.innerHTML=chartTab();
+  if(activeTab==='note') wireNoteTab();
 }
 
-function findingCard(f){
-  const meta = ACTION_META[f.action] || { label: f.action, color: 'var(--muted)' };
-  const ts = (f.timestamp||'').replace('T',' ').slice(0,16);
-  const pdpm = f.pdpm_impact && f.pdpm_impact.toLowerCase() !== 'none'
-    ? `<div class="pdpm"><b>PDPM / reimbursement:</b> ${esc(f.pdpm_impact)}</div>` : '';
-  const div = document.createElement('div');
-  div.className = 'finding';
-  div.style.borderLeftColor = meta.color;
-  div.innerHTML = `
-    <h3>
-      <span class="badge" style="background:${meta.color}">${esc(meta.label)}</span>
-      ${esc(f.title||'')}
-      <span class="sev">${esc(f.severity||'')} &middot; ${esc(f.verdict||'')}</span>
-    </h3>
-    <div class="claimline">
-      <div class="lbl">The note says</div>
-      <div class="qnote">&ldquo;${esc(f.note_quote)}&rdquo;</div>
-    </div>
-    <div class="claimline">
-      <div class="lbl">But the chart says</div>
-      <div class="qsrc" style="border-left-color:${meta.color}">&ldquo;${esc(f.source_quote)}&rdquo;</div>
-      <div class="srcchip"><span class="chip">${esc(f.source_doc_id)} &middot; ${esc(f.discipline)} &middot; ${esc(ts)}</span></div>
-    </div>
-    ${pdpm}
-    ${f.rationale ? `<div class="rationale">${esc(f.rationale)}</div>` : ''}
-    <div class="lbl" style="margin-top:10px">Drafted ${f.action==='attributed_insert'?'correction':'query'}</div>
-    <div class="drafted">${esc(f.drafted_text)}</div>
-    <div class="draftbar">
-      <span class="to">Addressed to: <b>${esc(f.action_target||'')}</b></span>
-      <button class="approve">Approve &amp; route</button>
+function noteTab(){
+  return `<textarea class="notearea" id="noteArea" spellcheck="false">${esc(noteDraft)}</textarea>
+    <div class="signbar">
+      <button class="sign" id="signBtn">Sign note</button>
+      <button class="ghost" id="resetNote">Reset</button>
+      <span class="hint" id="signHint">The Second Read runs automatically before the signature is committed.</span>
     </div>`;
-  const btn = div.querySelector('.approve');
-  btn.onclick = () => { btn.textContent = '✓ Routed'; btn.classList.add('done'); };
-  return div;
+}
+function wireNoteTab(){
+  const ta=document.getElementById('noteArea');
+  ta.oninput=()=>{noteDraft=ta.value;};
+  document.getElementById('signBtn').onclick=sign;
+  document.getElementById('resetNote').onclick=()=>{noteDraft=current.note_under_review.text;ta.value=noteDraft;};
+}
+function transcriptTab(){
+  const t=current.transcript; if(!t) return '<div class="hint">No transcript.</div>';
+  const html=esc(t.text).split('\n').map(l=>{
+    const m=l.match(/^([A-Z]{2,6}):(.*)$/);
+    return m?`<div class="ln"><span class="sp">${m[1]}:</span>${m[2]}</div>`:`<div class="ln">${l}</div>`;
+  }).join('');
+  return `<div class="hint" style="margin-bottom:10px">${esc(t.type)} &middot; ${esc(t.author||'')} &middot; ${esc(tshort(t.timestamp))}</div><div class="transcript">${html}</div>`;
+}
+function chartTab(){
+  const docs=current.documents||[];
+  return `<div class="idnote">These interdisciplinary notes live in the chart and are what The Second Read reconciles the physician&rsquo;s note against &mdash; the notes the physician never saw during the visit.</div>`+
+    docs.map(d=>`<div class="idoc"><div class="bar"><span>${esc(d.discipline)}</span><span>${esc(tshort(d.timestamp))}</span></div><div class="txt">${esc(d.text)}</div></div>`).join('');
 }
 
-async function run(){
-  const runBtn = document.getElementById('runBtn');
-  const status = document.getElementById('status');
-  runBtn.disabled = true;
-  status.textContent = 'Working…';
-  const done = new Set();
-  const retrieveLog = document.getElementById('retrieveLog');
-  const ledgerEl = document.getElementById('ledger');
-  const findingsEl = document.getElementById('findings');
-  const suppressedEl = document.getElementById('suppressed');
-  retrieveLog.innerHTML = ''; ledgerEl.innerHTML = '';
-  findingsEl.innerHTML = ''; suppressedEl.innerHTML = '';
-  document.getElementById('footprint').textContent = '';
-  document.getElementById('retrieveBox').style.display = 'none';
-  document.getElementById('ledgerBox').style.display = 'none';
-  document.getElementById('findingsBox').style.display = 'none';
-  renderStages('retrieve', done);
+document.getElementById('tabs').onclick=(e)=>{const t=e.target.closest('.tab');if(!t)return;activeTab=t.dataset.tab;renderEncounter();};
 
-  const resp = await fetch('/api/review', {
-    method: 'POST', headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({ chart: currentChart, note: document.getElementById('note').value })
+// highlight note_quotes in the note text (whitespace-flexible)
+function highlightNote(text,quotes){
+  let marked=text;
+  quotes.filter(Boolean).forEach(q=>{
+    const pat=q.trim().replace(/[.*+?^${}()|[\]\\]/g,'\\$&').replace(/\s+/g,'\\s+');
+    try{ marked=marked.replace(new RegExp(pat),m=>''+m+''); }catch(e){}
   });
-  const reader = resp.body.getReader();
-  const dec = new TextDecoder();
-  let buf = '';
-  let findingCount = 0;
+  return esc(marked).replace(//g,'<mark>').replace(//g,'</mark>');
+}
 
-  const handle = (ev) => {
-    if (ev.type === 'stage') {
-      // mark previous stages done
-      const order = STAGE_DEFS.map(s=>s[0]);
-      const idx = order.indexOf(ev.stage);
-      for (let i=0;i<idx;i++) done.add(order[i]);
-      renderStages(ev.stage, done);
-      if (ev.stage === 'retrieve') document.getElementById('retrieveBox').style.display='block';
-      if (ev.stage === 'extract') document.getElementById('ledgerBox').style.display='block';
-      if (ev.stage === 'reconcile') document.getElementById('findingsBox').style.display='block';
-    } else if (ev.type === 'retrieve_action') {
-      const line = document.createElement('div');
-      line.className = 'line';
-      if (ev.action === 'search') {
-        line.innerHTML = `<span class="k">search_chart</span>(&ldquo;${esc(ev.query)}&rdquo;) &rarr; ${ev.found.map(f=>esc(f.id)).join(', ')||'&mdash;'}`;
-      } else {
-        line.innerHTML = `<span class="read">read_document</span>(${esc(ev.doc_id)}) &mdash; ${esc(ev.doc_type)} &middot; ${esc(ev.discipline)}`;
-      }
-      retrieveLog.appendChild(line);
-    } else if (ev.type === 'ledger') {
-      done.add('extract'); renderStages('reconcile', done);
-      ledgerEl.innerHTML = ev.entries.map(e => `
-        <div class="lrow">
-          <div class="f">${esc(e.fact)}</div>
-          <div class="v">${esc(e.value)}</div>
-          <div class="q">&ldquo;${esc(e.source_quote)}&rdquo; &mdash; ${esc(e.source_doc_id)} &middot; ${esc(e.discipline)}</div>
-        </div>`).join('') || '<div class="empty">No facts extracted.</div>';
-    } else if (ev.type === 'finding') {
-      findingCount++;
-      findingsEl.appendChild(findingCard(ev.finding));
-    } else if (ev.type === 'suppressed') {
-      const s = document.createElement('div');
-      s.className = 'suppressed';
-      s.textContent = `Suppressed (no verbatim citation): ${ev.title}`;
-      suppressedEl.appendChild(s);
-    } else if (ev.type === 'done') {
-      for (const [k] of STAGE_DEFS) done.add(k);
-      renderStages(null, done);
-      const s = ev.summary;
-      document.getElementById('footprint').textContent =
-        `Retrieved ${s.documents_retrieved} documents · ${s.ledger_facts} cited facts · ${s.findings} findings routed.`;
-      if (findingCount === 0)
-        findingsEl.innerHTML = '<div class="empty">No discrepancies found &mdash; the note is consistent with the chart.</div>';
-      status.textContent = 'Done.';
-      runBtn.disabled = false;
-    } else if (ev.type === 'error') {
-      status.textContent = 'Error: ' + ev.message;
-      runBtn.disabled = false;
-    }
+async function sign(){
+  const btn=document.getElementById('signBtn'); btn.disabled=true; btn.textContent='Reading the chart…';
+  document.getElementById('signHint').textContent='';
+  const out=document.getElementById('out');
+  const done=new Set();
+  out.innerHTML=`<div class="card" style="padding:14px 18px">
+    <div style="font-weight:650;margin-bottom:8px">Second read &mdash; before you sign</div>
+    <div class="stages" id="stages"></div>
+    <details class="reason"><summary>How it reasoned (retrieval &amp; cited ledger)</summary>
+      <div class="log" id="log"></div><div class="ledger" id="ledger"></div></details>
+  </div>`;
+  const renderStages=(active)=>{document.getElementById('stages').innerHTML=STAGES.map(([k,l],i)=>{
+    let c='sp2'; if(done.has(k))c+=' done'; else if(k===active)c+=' active';
+    const ic=done.has(k)?'✓':(k===active?'<span class="spin"></span>':'');
+    return `<span class="${c}">${i+1}. ${l} ${ic}</span>`;}).join('');};
+  renderStages('retrieve');
+
+  const findings=[]; let cleared=[]; let result=null;
+  const log=()=>document.getElementById('log'), ledgerEl=()=>document.getElementById('ledger');
+
+  const resp=await fetch('/api/review',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({chart:current,note:noteDraft})});
+  const reader=resp.body.getReader(), dec=new TextDecoder(); let buf='';
+
+  const handle=(ev)=>{
+    if(ev.type==='stage'){const order=STAGES.map(s=>s[0]);for(let i=0;i<order.indexOf(ev.stage);i++)done.add(order[i]);renderStages(ev.stage);}
+    else if(ev.type==='retrieve_action'){const d=document.createElement('div');
+      d.innerHTML=ev.action==='search'?`<span class="k">search</span> &ldquo;${esc(ev.query)}&rdquo; &rarr; ${ev.found.map(f=>esc(f.id)).join(', ')||'&mdash;'}`
+        :`<span class="r">read</span> ${esc(ev.doc_id)} &middot; ${esc(ev.discipline)}`;
+      log()&&log().appendChild(d);}
+    else if(ev.type==='ledger'){done.add('extract');renderStages('reconcile');
+      if(ledgerEl())ledgerEl().innerHTML=ev.entries.map(e=>`<div class="lrow"><b>${esc(e.fact)}:</b> ${esc(e.value)} <span style="color:var(--faint)">[${esc(e.source_doc_id)}]</span></div>`).join('');}
+    else if(ev.type==='finding'){findings.push(ev.finding);}
+    else if(ev.type==='cleared'){cleared=ev.cleared;}
+    else if(ev.type==='result'){result=ev;}
+    else if(ev.type==='error'){out.innerHTML=`<div class="card" style="padding:16px;color:var(--evline)">Error: ${esc(ev.message)}</div>`;}
   };
+  while(true){const {value,done:rd}=await reader.read();if(rd)break;
+    buf+=dec.decode(value,{stream:true});let nl;
+    while((nl=buf.indexOf('\n\n'))!==-1){const chunk=buf.slice(0,nl);buf=buf.slice(nl+2);
+      const line=chunk.split('\n').find(l=>l.startsWith('data:'));
+      if(line){try{handle(JSON.parse(line.slice(5).trim()));}catch(e){}}}}
 
-  while (true) {
-    const { value, done: rdone } = await reader.read();
-    if (rdone) break;
-    buf += dec.decode(value, { stream: true });
-    let nl;
-    while ((nl = buf.indexOf('\n\n')) !== -1) {
-      const chunk = buf.slice(0, nl); buf = buf.slice(nl + 2);
-      const line = chunk.split('\n').find(l => l.startsWith('data:'));
-      if (line) { try { handle(JSON.parse(line.slice(5).trim())); } catch(e){} }
-    }
-  }
-  if (runBtn.disabled) { runBtn.disabled = false; status.textContent = 'Done.'; }
+  STAGES.forEach(([k])=>done.add(k));
+  if(result) renderResult(result,findings,cleared);
+  btn.disabled=false; btn.textContent='Sign note';
 }
 
-document.getElementById('runBtn').onclick = run;
-document.getElementById('resetBtn').onclick = () => { document.getElementById('note').value = baseNote; };
-document.getElementById('caseSelect').onchange = (e) => selectCase(e.target.value);
+function renderResult(result,findings,cleared){
+  const out=document.getElementById('out');
+  const reasonEl=out.querySelector('.reason');
+  const reasoning=reasonEl?`<div class="card" style="padding:12px 18px">${reasonEl.outerHTML}</div>`:'';
+  let html='';
 
-document.getElementById('importToggle').onclick = () => {
-  const p = document.getElementById('importPanel');
-  p.style.display = p.style.display === 'none' ? 'block' : 'none';
-};
-document.getElementById('importFile').onchange = (e) => {
-  const f = e.target.files[0]; if (!f) return;
-  const rd = new FileReader();
-  rd.onload = () => { document.getElementById('importText').value = rd.result; };
-  rd.readAsText(f);
-};
-document.getElementById('importBtn').onclick = async () => {
-  const status = document.getElementById('importStatus');
-  let obj;
-  try { obj = JSON.parse(document.getElementById('importText').value); }
-  catch(e){ status.textContent = 'Invalid JSON: ' + e.message; return; }
-  status.textContent = 'Importing…';
-  const r = await fetch('/api/import', {
-    method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({ data: obj })
+  // note echo with highlighted drifting lines
+  const quotes=[]; findings.forEach(f=>{quotes.push(f.note_quote); if(f.downstream_quote)quotes.push(f.downstream_quote);});
+  const p=current.patient||{};
+  html+=`<div class="card noteecho">
+    <div class="hd"><div class="who">${esc(p.name)}<small>${esc(String(p.age||''))}${esc(p.sex||'')} &middot; ${esc(p.status||'')} &middot; ${esc(p.setting||'')}</small></div>
+      <div class="kind">Physician note &middot; ${findings.length?'draft':'signed'}</div></div>
+    <div class="bd"><pre class="notehl">${highlightNote(noteDraft,quotes)}</pre>
+      ${result.verified_consistent?`<div class="verified"><span class="i">&#9432;</span><span>${findings.length?'Flagged lines highlighted. ':''}${esc(result.verified_consistent)}</span></div>`:''}
+    </div></div>`;
+
+  if(findings.length){
+    findings.forEach((f,i)=>{
+      const target=f.action_target||ACTION_LABEL[f.action]||'the care team';
+      html+=`<div class="finding" data-i="${i}">
+        <div class="fh"><div class="t"><span class="warn">&#9888;</span> Second read &mdash; before you sign</div>
+          <div class="conf">${result.confidence!=null?result.confidence+'% confidence':''}</div></div>
+        <div class="fb">
+          <p class="headline">${esc(i===0?result.headline||f.title:f.title)}</p>
+          ${f.evidence.map(e=>`<div class="ev"><div class="evh"><span>${esc(e.discipline)}</span><span>${esc(tshort(e.timestamp))}</span></div><div class="evq">&ldquo;${esc(e.source_quote)}&rdquo;</div></div>`).join('')}
+          ${f.why_it_matters?`<div class="why"><b>Why this matters</b>${esc(f.why_it_matters)}</div>`:''}
+          <div class="qbox"><div class="lbl2">Suggested query to ${esc(target)}</div><p class="draft">${esc(f.drafted_text)}</p></div>
+          <div class="acts">
+            <button class="btn primary" data-act="amend">Amend note</button>
+            <button class="btn" data-act="route">Send query to ${esc(ACTION_LABEL[f.action]||'care team')}</button>
+            <button class="btn" data-act="signanyway">Sign anyway</button>
+            <button class="btn" data-act="dismiss">Dismiss</button>
+          </div>
+        </div></div>`;
+    });
+  } else {
+    html+=`<div class="card signed">
+      <div class="fh"><div class="t">&#10003; Signed</div><div class="conf">${result.confidence!=null?result.confidence+'% confidence':''} &middot; ${tshort(current.note_under_review.timestamp)}</div></div>
+      <div class="fb" style="padding-top:12px;padding-bottom:4px"><div style="font-size:14px">Checked against ${result.docs_checked} interdisciplinary notes. ${esc(result.headline||'Consistent.')}</div></div>
+      ${cleared.length?`<details class="cleared"><summary>&#128065; Second read considered and cleared ${cleared.length} apparent conflict${cleared.length>1?'s':''}</summary>
+        <div class="cbody">${cleared.map(c=>`<div class="cwhy">${esc(c.why_consistent)}</div>${c.items.map(it=>`<div class="cchk"><span><span class="g">&#10003;</span>${esc(it.label)}</span><span class="ts">${esc(it.discipline)} &middot; ${esc(tshort(it.timestamp))}</span></div>`).join('')}`).join('<hr style="border:0;border-top:1px solid var(--line);margin:12px 0">')}</div>
+      </details>`:''}
+    </div>`;
+  }
+
+  html+=reasoning;
+  out.innerHTML=html;
+  wireActions();
+}
+
+function wireActions(){
+  document.querySelectorAll('.finding').forEach(card=>{
+    card.querySelectorAll('.btn').forEach(b=>{
+      b.onclick=()=>{
+        const act=b.dataset.act;
+        if(act==='amend'){activeTab='note';renderEncounter();window.scrollTo({top:0,behavior:'smooth'});}
+        else if(act==='route'){b.textContent='✓ Query routed';b.classList.add('routed');}
+        else if(act==='dismiss'){card.remove();}
+        else if(act==='signanyway'){
+          const out=document.getElementById('out');
+          const b2=document.createElement('div');b2.className='banner-signed';
+          b2.textContent='Signed with open queries — overridden by clinician.';
+          out.prepend(b2);
+        }
+      };
+    });
   });
-  const c = await r.json();
-  if (!r.ok){ status.textContent = 'Error: ' + (c.error||'import failed'); return; }
-  importedChart = c;
-  const sel = document.getElementById('caseSelect');
-  let opt = [...sel.options].find(o => o.value === '__imported__');
-  if (!opt){ opt = document.createElement('option'); opt.value='__imported__'; sel.appendChild(opt); }
-  opt.textContent = 'Imported: ' + (c.patient?.name || 'chart');
-  sel.value = '__imported__';
-  renderChart(c);
-  status.textContent = 'Loaded.';
-  document.getElementById('importPanel').style.display = 'none';
+}
+
+// import
+document.getElementById('importToggle').onclick=()=>{const p=document.getElementById('importPanel');p.style.display=p.style.display==='none'?'block':'none';};
+document.getElementById('importFile').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>document.getElementById('importText').value=r.result;r.readAsText(f);};
+document.getElementById('importBtn').onclick=async()=>{
+  const st=document.getElementById('importStatus');let obj;
+  try{obj=JSON.parse(document.getElementById('importText').value);}catch(e){st.textContent='Invalid JSON';return;}
+  st.textContent='Importing…';
+  const r=await fetch('/api/import',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({data:obj})});
+  const c=await r.json(); if(!r.ok){st.textContent=c.error||'failed';return;}
+  importedChart=c;
+  const list=document.getElementById('caseList');
+  if(!document.querySelector('.case[data-id="__imported__"]')){
+    const el=document.createElement('div');el.className='case';el.dataset.id='__imported__';
+    el.innerHTML=`<div class="nm">${esc(c.patient?.name||'Imported')}</div><div class="dx">imported chart</div>`;
+    el.onclick=()=>selectCase('__imported__');list.appendChild(el);
+  }
+  st.textContent='Loaded'; document.getElementById('importPanel').style.display='none';
+  selectCase('__imported__');
 };
 
-loadCharts();
+loadCases();
 </script>
 </body>
 </html>

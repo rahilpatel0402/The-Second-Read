@@ -1,52 +1,62 @@
 {
   "chart_id": "marcus-bell",
-  "title": "Marcus Bell - SNF rehab after ischemic stroke",
+  "title": "Marcus Bell - POD 6, ischemic CVA (left hemiparesis)",
+  "subtitle": "The silence",
+  "expected": "supported",
   "patient": {
     "name": "Marcus Bell",
-    "dob": "1957-09-02",
+    "mrn": "SNF-118071",
     "age": 68,
-    "sex": "male",
-    "mrn": "SNF-100437",
-    "setting": "Skilled Nursing Facility - Cedar Ridge",
-    "admit_date": "2026-03-05",
-    "admit_reason": "Rehabilitation after left MCA ischemic stroke"
+    "sex": "M",
+    "setting": "SNF Rehab, Rm 118-A",
+    "status": "POD 6, CVA",
+    "admit_date": "2026-07-12"
+  },
+  "transcript": {
+    "id": "TRANSCRIPT",
+    "type": "Doctor-Patient Encounter Transcript",
+    "discipline": "Provider",
+    "author": "Dr. S. Varghese, attending",
+    "timestamp": "2026-07-18T10:20:00-07:00",
+    "provenance": "authored-for-demo",
+    "text": "DR: Good morning, Marcus. How's the arm and leg feeling today?\nPT: The leg's coming back. The arm's still stubborn.\nDR: That's often how it goes, the leg leads the way. I hear you did a good lap with the therapist this morning?\nPT: Yeah. Walked down the hall and back with the walker. Girl just had to watch me, didn't have to hold me up.\nDR: That's real progress. A week ago that wasn't happening. How about getting up out of the chair, standing?\nPT: That's the hard part. Getting up, I need a good push. The left side doesn't want to help.\nDR: Right, the weakness on the left makes that push-off tough. That'll keep improving as the strength comes back.\n    Any trouble in the bed at night, turning over?\nPT: The night folks help me shift around. Can't do that on my own yet.\nDR: Understood. That's the left side again, it takes more to move in bed than it does to walk once you're up.\n    Let me examine you... grip on the left is still weak, I can see that. Leg strength is better than last week.\n    Sensation's intact. Good. You're moving in the right direction, Marcus.\nPT: Slow though.\nDR: Slow is fine. Slow and steady is exactly right after a stroke. Keep at it with the therapists."
   },
   "note_under_review": {
-    "id": "NOTE-ADMIT",
-    "type": "Provider Admission Note (draft under review)",
+    "id": "NOTE",
+    "type": "Generated Clinical Note (DRAFT, pending signature)",
     "discipline": "Provider",
-    "author": "Dr. Alvarez, MD (attending)",
-    "timestamp": "2026-03-05T11:00:00-08:00",
+    "author": "Dr. S. Varghese, attending",
+    "timestamp": "2026-07-18T10:34:00-07:00",
     "provenance": "authored-for-demo",
-    "text": "SKILLED NURSING FACILITY ADMISSION NOTE\n\nSubjective: Mr. Marcus Bell is a 68-year-old man admitted for rehabilitation\nafter a left middle cerebral artery ischemic stroke. He has residual right-sided\nweakness and reports his speech and swallowing \"feel almost back to normal.\" He\nis motivated and independent-minded.\n\nObjective: Alert, oriented, mild expressive aphasia, mild right facial droop.\nRight upper and lower extremity strength 4-/5. He fed himself lunch without\nobvious difficulty during my visit. Diet: regular, no restrictions. Patient is\nmodified independent with activities of daily living.\n\nAssessment and Plan:\n\n### Ischemic stroke, cardioembolic (atrial fibrillation)\n- Started apixaban 5 mg twice daily for cardioembolic stroke prevention\n- Continue rehabilitation with physical, occupational, and speech therapy\n\n### Rehabilitation\n- Advance mobility and self-care as tolerated"
+    "text": "Subjective: 68-year-old man POD 6 from ischemic CVA with residual left hemiparesis, admitted for\nrehabilitation. Reports improving lower extremity function with persistent left upper extremity\nweakness. Endorses difficulty with sit-to-stand secondary to left-sided weakness and requires\nassistance with bed mobility. Engaged and motivated.\n\nObjective: Afebrile, vitals stable. Cardiovascular: regular rate and rhythm. Neurologic: left grip\nstrength diminished, left lower extremity strength improved from prior exam, sensation intact\nbilaterally, no new focal deficit.\n\nFunctional status: Ambulates 150 feet with rolling walker and supervision. Requires moderate assist\nfor transfers secondary to left-sided weakness. Progressing appropriately.\n\nAssessment & Plan: 1. Ischemic CVA with left hemiparesis, POD 6, improving. Continue intensive\nrehabilitation. 2. Left upper extremity weakness limiting transfers and bed mobility. Continue PT,\nOT. 3. Continue secondary stroke prevention, antiplatelet and statin therapy. 4. Reassess in 2 days."
   },
   "documents": [
     {
-      "id": "SLP-EVAL-001",
-      "type": "Speech-Language Pathology - Bedside Swallow Evaluation",
+      "id": "PT-002",
+      "type": "Physical Therapy",
       "discipline": "Physical Therapy",
-      "author": "K. Adeyemi, MS, CCC-SLP",
-      "timestamp": "2026-03-05T16:00:00-08:00",
+      "author": "PT",
+      "timestamp": "2026-07-18T08:45:00-07:00",
       "provenance": "authored-for-demo",
-      "text": "SPEECH-LANGUAGE PATHOLOGY - BEDSIDE SWALLOW EVALUATION\nDate of service: 2026-03-05 16:00.\n\nSpeech-language pathology bedside swallow evaluation reveals moderate\noropharyngeal dysphagia with delayed swallow initiation and overt signs of\naspiration on thin liquids (wet vocal quality, coughing after swallows).\nRecommend nectar-thick liquids and a mechanical soft diet with aspiration\nprecautions and supervision at meals.\n\nA regular, unrestricted diet is not safe for this patient at this time."
+      "text": "Ambulated 150 feet with rolling walker, supervision only, no physical assist required. Good\nendurance, no loss of balance, one standing rest break. Gait speed improving. GG0170I walk 10 feet,\n04 supervision. Continue gait training, advancing distance."
     },
     {
-      "id": "MAR-001",
-      "type": "Medication Administration Record (carried from prior records)",
-      "discipline": "Nursing",
-      "author": "Prior-records transfer packet",
-      "timestamp": "2026-03-03T09:00:00-08:00",
-      "provenance": "authored-for-demo",
-      "text": "MEDICATION ADMINISTRATION RECORD (carried from prior records)\nLast reconciled: 2026-03-03 (acute hospital, before the SNF transfer).\n\nActive medications:\n  - aspirin 81 mg once daily\n  - atorvastatin 40 mg once daily\n  - lisinopril 10 mg once daily\n\nNo oral anticoagulant listed. This MAR has not been reconciled with the SNF\nadmission orders."
-    },
-    {
-      "id": "OT-EVAL-001",
-      "type": "Occupational Therapy Initial Evaluation",
+      "id": "OT-002",
+      "type": "Occupational Therapy",
       "discipline": "Occupational Therapy",
-      "author": "D. Fischer, OTR/L",
-      "timestamp": "2026-03-05T15:20:00-08:00",
+      "author": "OT",
+      "timestamp": "2026-07-18T09:15:00-07:00",
       "provenance": "authored-for-demo",
-      "text": "OCCUPATIONAL THERAPY INITIAL EVALUATION\nDate of service: 2026-03-05 15:20.\n\nSelf-care - Section GG admission performance:\n  GG0130A Eating: 04 - Supervision/touching assistance\n  GG0130B Oral hygiene: 03 - Partial/moderate assistance\n  GG0130C Toileting hygiene: 03 - Partial/moderate assistance\n  Upper-body dressing: 03 - Partial/moderate assistance\n  Lower-body dressing and bathing: 03 - Partial/moderate assistance\n\nOccupational therapy evaluation: patient requires moderate assistance for upper-\nand lower-body dressing and bathing; he is not independent with ADLs. The Section\nGG self-care scores support a substantially higher assistance level than the\nadmission note's \"modified independent\" description, and drive the PDPM case-mix."
+      "text": "Transfer and self-care assessment. Patient requires moderate assist for sit-to-stand and toilet\ntransfers secondary to left upper extremity weakness limiting push-off and grab-bar use. Standing\ntolerance improving. GG0170D sit to stand, 03 moderate assistance. Continue OT, focus on transfer\nmechanics."
+    },
+    {
+      "id": "NUR-002",
+      "type": "Nursing",
+      "discipline": "Nursing",
+      "author": "RN",
+      "timestamp": "2026-07-18T06:40:00-07:00",
+      "provenance": "authored-for-demo",
+      "text": "Overnight care. Patient required two-person assist for repositioning and bed mobility per care plan\nsecondary to left hemiparesis. Assisted with turning q2h. No skin breakdown. Tolerated night without\ncomplaint."
     }
   ]
 }

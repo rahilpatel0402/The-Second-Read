@@ -32,15 +32,23 @@ def main():
                 print(f"    - {e['fact']}: {e['value']}  [{e['source_doc_id']}]")
         elif t == "finding":
             f = ev["finding"]
-            print(f"\n  FINDING [{f['action']}] {f['title']}")
+            print(f"\n  FINDING [{f['action']} -> {f.get('action_target')}] {f['title']}")
             print(f"    verdict={f['verdict']} severity={f.get('severity')}")
             print(f"    note:   {f['note_quote'][:90]!r}")
-            print(f"    source: {f['source_quote'][:90]!r}  ({f['source_doc_id']})")
-            print(f"    -> {f['action_target']}: {f['drafted_text'][:110]}...")
+            for e in f.get("evidence", []):
+                print(f"    src [{e['discipline']}/{e['source_doc_id']}]: {e['source_quote'][:80]!r}")
+            print(f"    draft: {f['drafted_text'][:110]}...")
+        elif t == "cleared":
+            print(f"\n  CLEARED {len(ev['cleared'])} apparent conflict(s):")
+            for c in ev["cleared"]:
+                print(f"    - {c['apparent_conflict']}: {c['why_consistent'][:100]}")
         elif t == "suppressed":
             print(f"  SUPPRESSED (uncitable): {ev['title']}")
-        elif t == "done":
-            print(f"\n=== DONE: {ev['summary']} ===")
+        elif t == "result":
+            print(f"\n=== RESULT: {ev['status'].upper()}  (confidence {ev.get('confidence')}) ===")
+            print(f"    headline: {ev.get('headline')}")
+            print(f"    verified_consistent: {ev.get('verified_consistent')}")
+            print(f"    findings={ev['findings_count']} cleared={ev['cleared_count']} docs_checked={ev['docs_checked']}")
         elif t == "error":
             print(f"\n!!! ERROR: {ev['message']}")
 

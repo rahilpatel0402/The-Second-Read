@@ -9,17 +9,31 @@ CASES_DIR = os.path.join(DATA_DIR, "cases")
 
 
 def list_charts():
-    """Return [{id, title, patient_name}] for every hardcoded case."""
+    """Return case metadata for the browser sidebar."""
     out = []
     for path in sorted(glob.glob(os.path.join(CASES_DIR, "*.json"))):
         with open(path, encoding="utf-8") as f:
             c = json.load(f)
+        p = c["patient"]
         out.append({
             "id": c["chart_id"],
             "title": c.get("title", c["chart_id"]),
-            "patient_name": c["patient"]["name"],
+            "subtitle": c.get("subtitle", ""),
+            "patient_name": p["name"],
+            "age": p.get("age"), "sex": p.get("sex"),
+            "status": p.get("status", ""),
         })
     return out
+
+
+def all_documents(chart):
+    """The evidence pool the agent reconciles against: the interdisciplinary
+    notes plus the encounter transcript (the note is what's under review, so it
+    is not in the pool)."""
+    docs = list(chart.get("documents", []))
+    if chart.get("transcript"):
+        docs.append(chart["transcript"])
+    return docs
 
 
 def load_chart(chart_id):
@@ -36,7 +50,7 @@ def default_chart():
 
 
 def get_document(chart, doc_id):
-    for d in chart["documents"]:
+    for d in all_documents(chart):
         if d["id"] == doc_id:
             return d
     if chart["note_under_review"]["id"] == doc_id:
@@ -52,7 +66,7 @@ def search_chart(chart, query, limit=6):
     """Lightweight keyword-overlap search over the chart documents."""
     q = _tokens(query)
     scored = []
-    for d in chart["documents"]:
+    for d in all_documents(chart):
         hay = f"{d['type']} {d['discipline']} {d['text']}"
         overlap = len(q & _tokens(hay))
         # small boost for query substrings appearing directly in the text

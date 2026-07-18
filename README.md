@@ -6,35 +6,33 @@ Built for the Abridge Hackathon. Target setting: **post-acute care / skilled nur
 
 ## What it does
 
-Given a clinician's note (an ambient-scribe output or a manual draft) and the rest of a patient's chart, The Second Read runs an agentic pipeline:
+The Second Read is **embedded in the "Sign note" action**. When the clinician signs an ambient-generated (or pasted) note, the agent runs an agentic pipeline against the rest of the chart *before the signature commits*:
 
 1. **Retrieve** — a real Claude tool-use loop; the agent chooses which chart documents to pull (`search_chart`, `read_document`).
 2. **Extract** — builds a **cited state ledger**: each verified fact with a source quote, document id, and timestamp.
-3. **Reconcile** — compares the note against the ledger, per claim, per PDPM and medication-safety standards.
-4. **Route** — decides the action: strike, attributed insert, query a specific discipline, or flag the record as stale. *Routing is a decision, not a classification.*
-5. **Act** — drafts the CDI query or attributed correction, addressed to the discipline whose record disagrees.
+3. **Reconcile** — compares the note against the ledger, per claim, applying clinical judgment (CMS Section GG tasks are distinct; accurate-but-coarser claims are not contradictions).
+4. **Route** — decides the action: query the discipline that owns the contradicting measure, flag a stale record, attributed insert, or strike. *Routing is a decision, not a classification.*
+5. **Act** — drafts the CDI query, addressed to the discipline whose record disagrees.
 
-It is even-handed: it challenges the **provider** when therapy/nursing disagree, **and** flags another record as **stale** when the provider is the one who's right.
+**If a discrepancy is found**, signing is interrupted with a *"Second read — before you sign"* card: the headline, a confidence score, the contradicting notes quoted with discipline + timestamp, why it matters, a drafted query, and Amend / Send query / Sign anyway / Dismiss.
+
+**If the note holds up**, it signs — "checked against N interdisciplinary notes, consistent" — with an expandable *"considered and cleared K apparent conflicts"* so the clinician sees the judgment that was applied. No false alarms.
 
 ### "No quote, no finding" — enforced in code
 
 Every finding and ledger entry must quote its source document **verbatim**. The backend re-verifies that each quote actually appears in the cited document (`agent.quote_in`); any finding it cannot cite is **suppressed, not guessed**. Hallucinated findings are structurally impossible to surface. This is the trust guarantee that makes a "challenge the doctor" tool safe to put in front of a clinician.
 
-## The demo patient
+## The two demonstration cases
 
-**Monica Hilpert, 76, SNF admission for deconditioning** — a real record (#19) from Abridge's provided synthetic dataset. Running the default note surfaces three findings, each a different route:
+**Case 1 — Eleanor Hayes, 79 F, POD 4 right hip hemiarthroplasty ("the catch").** The note (built from a mid-day self-report visit) records "steady gait" and anticipates discharge in 5–7 days. But within the last 36 hours PT documents 8 feet at maximal assist, nursing documents an unwitnessed fall, and OT documents unsafe transfers. → **Clarification recommended**: the functional line is flagged, evidence cited from all three disciplines, a query routed to Physical Therapy — while the incision exam and post-op day are verified consistent and *not* flagged.
 
-- **Query → Therapy (PDPM impact):** the note describes ambulation the PT Section-GG eval contradicts — and GG drives the PDPM PT/OT case-mix, so the discrepancy moves reimbursement.
-- **Attributed insert / safety:** the note starts **meperidine** on a 76-year-old — flagged against AGS Beers Criteria by the pharmacy consult.
-- **Flag stale → Nursing:** the note's diet is correct and current; a nursing care plan carried from the hospital still says *NPO*. Here the **provider is right** and the nursing record is stale.
+**Case 2 — Marcus Bell, 68 M, POD 6 ischemic stroke ("the silence").** The note lists three different assist levels — supervision to walk, moderate assist to transfer, two-person assist for bed mobility. A shallow tool fires a contradiction. The Second Read recognizes these as three **distinct Section GG tasks** that legitimately differ in hemiparesis. → **Signed clean**, 1–3 apparent conflicts considered and cleared. This is the case that proves clinical judgment and no false alarms.
 
-The note is **editable** — type a new claim and watch it get challenged (or cleared).
+The note is **editable** — paste or edit a claim and re-sign to watch it get challenged (or cleared).
 
-## Data provenance (what we built vs. what was provided)
+## Data provenance
 
-- **Base documents** (provider admission note, ambient encounter transcript, FHIR problem/med list) are derived **verbatim from Abridge's provided synthetic dataset**, record #19. Tagged `abridge-synthetic`. All synthetic; no real patient data.
-- **Ancillary SNF documents** (PT evaluation, pharmacy consult, dietitian consult, nursing care plan) are **authored by us** for the demo and tagged `authored-for-demo` in the UI. Abridge ships one encounter per patient; cross-discipline reconciliation needs the ancillary records a real SNF chart contains. The agent's *reasoning* is the product — these documents are the stage.
-- `backend/chart.py` also includes `ingest_abridge_record()`, which converts a raw Abridge FHIR record into a chart — the loader speaks their format directly.
+Every patient, note, and interdisciplinary record is **fully synthetic and authored for this demo** (no external dataset, no PHI). Each case ships the encounter **transcript**, the ambient-generated **clinical note** under review, and the **interdisciplinary chart** (PT / Nursing / OT) that lives in JSON and is what the Second Read reconciles against — the notes the physician never saw. `backend/chart.py` also includes `ingest_abridge_record()` / `normalize_import()`, so the **Import** path accepts a native chart JSON or an Abridge FHIR record directly.
 
 ## Run it
 
@@ -75,10 +73,6 @@ THESECONDREAD_MODEL=claude-sonnet-5
 
 Python · FastAPI (SSE streams the agent stage-by-stage to the browser) · Anthropic Claude (Opus 4.8, tool use) · vanilla HTML/JS frontend, served locally.
 
-## Regenerating the demo chart
+## Editing / adding cases
 
-`backend/data/demo_chart.json` is committed and self-contained. To rebuild it from the Abridge dataset:
-
-```bash
-ABRIDGE_DATASET=/path/to/synthetic-ambient-fhir-25.jsonl python scripts/build_demo_chart.py
-```
+The cases live in `backend/data/cases/*.json` (self-contained, committed). Edit the clinical text in `scripts/build_cases.py` and re-run `python scripts/build_cases.py`, or drop a new JSON into `backend/data/cases/` — the UI picks it up automatically. Smoke-test a case headlessly with `python scripts/smoke.py <chart_id>`.

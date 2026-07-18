@@ -23,7 +23,7 @@ import re
 import anthropic
 from dotenv import load_dotenv
 
-from chart import get_document, search_chart
+from chart import get_document, search_chart, all_documents
 
 load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
 
@@ -118,7 +118,7 @@ RETRIEVE_SYSTEM = (
 def stage_retrieve(chart, note_text, emit, max_turns=8):
     doc_index = "\n".join(
         f"  - {d['id']} | {d['type']} | {d['discipline']} | {d['timestamp']}"
-        for d in chart["documents"]
+        for d in all_documents(chart)
     )
     user = (
         f"NOTE UNDER REVIEW ({chart['note_under_review']['type']}):\n"
@@ -189,10 +189,10 @@ EXTRACT_SYSTEM = (
 
 
 def stage_extract(chart, doc_ids, emit):
-    docs = [get_document(chart, i) for i in doc_ids] or chart["documents"]
-    docs = [d for d in docs if d]
+    docs = [get_document(chart, i) for i in doc_ids]
+    docs = [d for d in docs if d and d["id"] != chart["note_under_review"]["id"]]
     if not docs:
-        docs = chart["documents"]
+        docs = all_documents(chart)
     blob = "\n\n".join(
         f"[{d['id']}] {d['type']} ({d['discipline']}, {d['timestamp']}):\n{d['text']}"
         for d in docs
@@ -210,47 +210,70 @@ def stage_extract(chart, doc_ids, emit):
 # ---------- STAGE 3-5: RECONCILE / ROUTE / ACT ----------
 
 RECONCILE_SYSTEM = (
-    "You are the reconciliation engine of The Second Read. Every ambient AI "
-    "scribe treats the clinician's words as truth. You do not. You read the note "
-    "back against the verified state ledger and the rest of the chart, and you "
-    "challenge the note - including the provider's own input - wherever the "
-    "nursing, therapy, pharmacy, or dietitian record disagrees. You are also "
-    "even-handed: when the provider is RIGHT and it is another record that is out "
-    "of date, you flag THAT record as stale rather than the provider.\n\n"
-    "For each discrepancy produce a finding. RULES:\n"
-    "- note_quote MUST be copied verbatim from the note under review.\n"
-    "- source_quote MUST be copied verbatim from the cited chart document.\n"
-    "- If you cannot quote both sides, do not raise the finding (no quote, no finding).\n"
-    "- Consider PDPM standards (e.g. Section GG function drives PT/OT case-mix) "
-    "and medication-safety standards (e.g. AGS Beers Criteria).\n\n"
-    "Then ROUTE each finding - this is a DECISION about who must act next, not a "
-    "label. Address the action to the discipline that OWNS the contradicting fact:\n"
-    "  query_therapy: function / mobility / ADL / swallow discrepancies - Therapy "
-    "(PT, OT, or SLP) owns the objective measure. Route to them to reconcile the "
-    "level and align the MDS Section GG (state the PDPM impact).\n"
-    "  query_nursing: a nursing-owned record (skin assessment, care plan, MAR, "
-    "flowsheet) must be confirmed or updated.\n"
-    "  query_provider: the provider must amend their own note or make a clinical "
-    "decision (e.g., changing a medication order).\n"
-    "  attributed_insert: draft an attributed clarification to insert into the note "
-    "for provider approval - use for clear, low-ambiguity corrections.\n"
-    "  flag_stale: a NON-provider record is out of date while the provider/current "
-    "data are right - flag that record and route its update to the owning discipline.\n"
-    "  strike: remove an unsupportable statement from the note.\n"
-    "Prefer routing to the discipline that owns the contradicting fact; reserve "
-    "query_provider for when the provider's own documentation or a clinical decision "
-    "is what must change.\n\n"
-    "For each finding also set:\n"
-    "  verdict: one of contradicted | unsupported | stale | safety\n"
-    "  action_target: the specific discipline/role the drafted text is addressed to\n"
-    "  drafted_text: the actual CDI query or attributed correction to send, "
-    "written professionally and addressed to action_target.\n\n"
+    "You are the reconciliation engine of The Second Read. An ambient AI scribe "
+    "wrote the note under review from the physician's visit alone. You read that "
+    "note back against the rest of the chart - the interdisciplinary notes the "
+    "physician never saw (physical therapy, nursing, occupational therapy) and the "
+    "encounter transcript - and decide whether today's note still describes today's "
+    "patient.\n\n"
+    "CLINICAL JUDGMENT IS THE POINT - false alarms are as bad as misses. Do not fire "
+    "on surface-level number mismatches. Function is measured per task under CMS "
+    "Section GG: ambulation, sit-to-stand / transfers, and bed mobility are DISTINCT "
+    "tasks. A single patient can genuinely need supervision to walk, moderate assist "
+    "to transfer, and two-person assist for bed mobility - that is expected in "
+    "hemiparesis and is NOT a contradiction. Only raise a finding when the note's "
+    "claim about a SPECIFIC task or fact is actually contradicted by the chart for "
+    "that SAME task/fact.\n\n"
+    "ACCURATE-BUT-COARSER IS NOT A FINDING. If the note's claim is true but simply "
+    "less granular than the chart, the note is consistent - clear it, do not flag it. "
+    "Example: the note says 'requires assistance with bed mobility' and nursing "
+    "specifies 'two-person assist' - two-person assist IS assistance, so the note is "
+    "correct and there is NO finding. Only flag when the note asserts a status the "
+    "chart CONTRADICTS for the same task (e.g. the note says 'steady gait' or implies "
+    "independence while therapy documents maximal assist), or when the note omits "
+    "something that makes a stated claim or downstream plan unsafe.\n\n"
+    "CONSOLIDATE. Produce ONE finding per underlying drift. When several note lines "
+    "express or depend on the same drift - a functional-status claim and the "
+    "discharge plan it drives - raise a SINGLE finding: put the primary drifting "
+    "claim in note_quote, the driven decision line in downstream_quote, and attach "
+    "ALL cross-discipline evidence to that one finding. Do not split one drift into "
+    "multiple findings, and do not anchor a finding on an accurate or unrelated line "
+    "(e.g. an accurate incision exam or post-op day).\n\n"
+    "RULES (no quote, no finding):\n"
+    "- note_quote MUST be copied verbatim from the note under review (the exact "
+    "sentence/line carrying the drifting claim).\n"
+    "- every evidence item's source_quote MUST be copied verbatim from its cited "
+    "document. Cite EVERY discipline whose record bears on the claim.\n\n"
+    "ROUTE each finding to the discipline that owns the contradicting measure. "
+    "Functional / mobility / gait / discharge-readiness drift goes to the therapy "
+    "discipline that owns the objective measure (Physical Therapy). Use query_nursing "
+    "for nursing-owned records; query_provider when the provider must change their own "
+    "note; flag_stale when a non-provider record is outdated and the provider is "
+    "right; attributed_insert / strike for direct note edits. ACT by drafting the "
+    "actual query text, addressed to action_target.\n\n"
+    "Also identify CLEARED conflicts: apparent conflicts a shallow tool would fire "
+    "on, which you examined and dismissed because they are actually consistent "
+    "(e.g. different Section GG tasks at different assist levels). Explain why.\n\n"
     "Return ONLY JSON:\n"
-    "{\"findings\": [{\"title\": str, \"note_quote\": str, \"source_doc_id\": str, "
-    "\"source_quote\": str, \"timestamp\": str, \"discipline\": str, "
-    "\"verdict\": str, \"severity\": \"high\"|\"medium\"|\"low\", "
-    "\"category\": str, \"pdpm_impact\": str, \"rationale\": str, "
-    "\"action\": str, \"action_target\": str, \"drafted_text\": str}]}"
+    "{\n"
+    "  \"headline\": str (one sentence a physician sees first),\n"
+    "  \"confidence\": int (0-100),\n"
+    "  \"verified_consistent\": str (one line naming what you checked and found "
+    "accurate/consistent, so the physician trusts the rest of the note),\n"
+    "  \"findings\": [{\"title\": str, \"note_quote\": str, "
+    "\"downstream_quote\": str (optional: a note line whose decision this claim "
+    "drives, e.g. a discharge or diet order, verbatim, else \"\"), "
+    "\"verdict\": \"contradicted\"|\"unsupported\"|\"stale\"|\"safety\", "
+    "\"severity\": \"high\"|\"medium\"|\"low\", \"why_it_matters\": str, "
+    "\"evidence\": [{\"source_doc_id\": str, \"source_quote\": str, "
+    "\"discipline\": str, \"timestamp\": str}], "
+    "\"action\": \"query_therapy\"|\"query_nursing\"|\"query_provider\"|"
+    "\"flag_stale\"|\"attributed_insert\"|\"strike\", "
+    "\"action_target\": str, \"drafted_text\": str}],\n"
+    "  \"cleared\": [{\"apparent_conflict\": str, \"why_consistent\": str, "
+    "\"items\": [{\"label\": str, \"source_doc_id\": str, \"source_quote\": str, "
+    "\"discipline\": str, \"timestamp\": str}]}]\n"
+    "}"
 )
 
 
@@ -263,41 +286,74 @@ def stage_reconcile(chart, note_text, ledger, docs, emit):
     user = (
         f"NOTE UNDER REVIEW:\n\"\"\"\n{note_text}\n\"\"\"\n\n"
         f"VERIFIED STATE LEDGER:\n{ledger_blob}\n\n"
-        f"FULL CHART DOCUMENTS (for verbatim quoting):\n{docs_blob}"
+        f"THE REST OF THE CHART (for verbatim quoting):\n{docs_blob}"
     )
     data = _call_json(RECONCILE_SYSTEM, user, max_tokens=8000)
     note = chart["note_under_review"]["text"]
+
     findings = []
     for f in data.get("findings", []):
-        d = get_document(chart, f.get("source_doc_id", ""))
-        note_ok = quote_in(f.get("note_quote", ""), note)
-        src_ok = d is not None and quote_in(f.get("source_quote", ""), d["text"])
-        if note_ok and src_ok:
-            f["verified"] = True
-            findings.append(f)
-            emit({"type": "finding", "finding": f})
-        else:
-            emit({"type": "suppressed", "reason": "uncitable",
-                  "title": f.get("title", "(untitled)"),
-                  "note_quote_ok": note_ok, "source_quote_ok": src_ok})
-    return findings
+        if not quote_in(f.get("note_quote", ""), note):
+            emit({"type": "suppressed", "title": f.get("title", "(untitled)")})
+            continue
+        ev = []
+        for e in f.get("evidence", []):
+            d = get_document(chart, e.get("source_doc_id", ""))
+            if d and quote_in(e.get("source_quote", ""), d["text"]):
+                ev.append(e)
+        if not ev:
+            emit({"type": "suppressed", "title": f.get("title", "(untitled)")})
+            continue
+        f["evidence"] = ev
+        if f.get("downstream_quote") and not quote_in(f["downstream_quote"], note):
+            f["downstream_quote"] = ""
+        findings.append(f)
+        emit({"type": "finding", "finding": f})
+
+    cleared = []
+    for c in data.get("cleared", []):
+        items = []
+        for it in c.get("items", []):
+            d = get_document(chart, it.get("source_doc_id", ""))
+            if d and quote_in(it.get("source_quote", ""), d["text"]):
+                items.append(it)
+        c["items"] = items
+        cleared.append(c)
+    if cleared:
+        emit({"type": "cleared", "cleared": cleared})
+
+    return {
+        "findings": findings,
+        "cleared": cleared,
+        "headline": data.get("headline", ""),
+        "confidence": data.get("confidence"),
+        "verified_consistent": data.get("verified_consistent", ""),
+    }
 
 
 # ---------- orchestrator ----------
 
 def run_review(chart, note_text, emit):
-    emit({"type": "stage", "stage": "retrieve", "label": "Retrieving relevant chart documents"})
+    # The note under review is whatever text was signed (may be edited/pasted),
+    # so citation checks validate against exactly that.
+    chart["note_under_review"]["text"] = note_text
+
+    emit({"type": "stage", "stage": "retrieve", "label": "Reading the rest of the chart"})
     doc_ids = stage_retrieve(chart, note_text, emit)
 
     emit({"type": "stage", "stage": "extract", "label": "Building the cited state ledger"})
     ledger, docs = stage_extract(chart, doc_ids, emit)
 
     emit({"type": "stage", "stage": "reconcile", "label": "Reconciling the note against the chart, per claim"})
-    findings = stage_reconcile(chart, note_text, ledger, docs, emit)
+    r = stage_reconcile(chart, note_text, ledger, docs, emit)
 
-    emit({"type": "done",
-          "summary": {
-              "documents_retrieved": len(doc_ids),
-              "ledger_facts": len(ledger),
-              "findings": len(findings),
-          }})
+    status = "clarification_recommended" if r["findings"] else "supported"
+    emit({"type": "result",
+          "status": status,
+          "headline": r["headline"],
+          "confidence": r["confidence"],
+          "verified_consistent": r["verified_consistent"],
+          "findings_count": len(r["findings"]),
+          "cleared_count": len(r["cleared"]),
+          "docs_checked": len(all_documents(chart)),
+          "ledger_facts": len(ledger)})

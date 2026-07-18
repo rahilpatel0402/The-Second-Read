@@ -1,0 +1,62 @@
+{
+  "chart_id": "eleanor-hayes",
+  "title": "Eleanor Hayes - POD 4, right hip hemiarthroplasty",
+  "subtitle": "The catch",
+  "expected": "clarification_recommended",
+  "patient": {
+    "name": "Eleanor Hayes",
+    "mrn": "SNF-214402",
+    "age": 79,
+    "sex": "F",
+    "setting": "SNF Rehab, Rm 214-B",
+    "status": "POD 4, R hip hemi",
+    "admit_date": "2026-07-14"
+  },
+  "transcript": {
+    "id": "TRANSCRIPT",
+    "type": "Doctor-Patient Encounter Transcript",
+    "discipline": "Provider",
+    "author": "Dr. A. Mensah, attending",
+    "timestamp": "2026-07-18T11:40:00-07:00",
+    "provenance": "authored-for-demo",
+    "text": "DR: Morning, Eleanor. How are you feeling today?\nPT: Oh, better, doctor. Much better than when I came in. I want to go home.\nDR: I can hear that. The hip's healing nicely on the X-ray. How's the walking coming along?\nPT: Good, I think. I've been using the walker. I get around.\nDR: That's what I like to hear. Any pain when you walk?\nPT: A little, but nothing like before. The therapy people have me up and moving.\nDR: Good. And you feel steady on your feet with the walker?\nPT: I manage. I've always been independent, you know. I did my own shopping right up until the fall.\nDR: I remember. That's the goal, get you back to that. Let me listen to your heart and lungs... good.\n    Incision looks clean, no redness. Let me just check the leg. Any numbness or tingling?\nPT: No, no. It feels like my leg again.\nDR: Excellent. Well, everything I'm seeing today looks like you're on track. Keep working with therapy,\n    and if this pace holds we'll start talking about getting you home this week.\nPT: Oh, that would be wonderful. My daughter's been asking.\nDR: Let's aim for it. I'll check in again tomorrow."
+  },
+  "note_under_review": {
+    "id": "NOTE",
+    "type": "Generated Clinical Note (DRAFT, pending signature)",
+    "discipline": "Provider",
+    "author": "Dr. A. Mensah, attending",
+    "timestamp": "2026-07-18T11:52:00-07:00",
+    "provenance": "authored-for-demo",
+    "text": "Subjective: 79-year-old woman POD 4 from right hip hemiarthroplasty, admitted for rehabilitation\nfollowing a mechanical fall at home. Reports feeling substantially improved and is eager to return\nhome, where she lived independently prior to admission. Endorses mild incisional pain, well\ncontrolled, without new numbness or paresthesia. Motivated and engaged with therapy.\n\nObjective: Afebrile, vitals stable. Cardiovascular: regular rate and rhythm. Pulmonary: clear\nbilaterally. Right hip incision clean, dry, intact, without erythema or drainage. Neurovascularly\nintact distally. Post-operative radiograph reviewed, prosthesis in good alignment.\n\nFunctional status: Patient ambulating in hallway with rolling walker, steady gait, tolerating\ntherapy well.\n\nAssessment & Plan: 1. Status post right hip hemiarthroplasty, POD 4, healing appropriately. Continue\ncurrent rehabilitation plan. 2. Functional recovery progressing. Anticipate discharge home in 5-7\ndays if current trajectory continues. 3. Continue DVT prophylaxis, pain management, and daily\ntherapy. 4. Will reassess tomorrow."
+  },
+  "documents": [
+    {
+      "id": "PT-001",
+      "type": "Physical Therapy",
+      "discipline": "Physical Therapy",
+      "author": "PT",
+      "timestamp": "2026-07-17T14:00:00-07:00",
+      "provenance": "authored-for-demo",
+      "text": "Gait training attempted. Patient required maximal assist of two for sit-to-stand. Ambulated 8 feet\nwith rolling walker and moderate assist before requesting to sit, reporting dizziness and fatigue.\nSession terminated early.\n\nSection GG revised: GG0170I walk 10 feet, 02 substantial/maximal assistance. GG0170D sit to stand,\n02. Discharge readiness not yet established."
+    },
+    {
+      "id": "NUR-001",
+      "type": "Nursing",
+      "discipline": "Nursing",
+      "author": "RN",
+      "timestamp": "2026-07-17T22:15:00-07:00",
+      "provenance": "authored-for-demo",
+      "text": "Patient found seated on floor at bedside at 22:05, attempting to self-transfer to bedside commode\nwithout calling for assistance. No injury, neuro checks initiated per protocol. Second unwitnessed\ntransfer attempt this shift.\n\nBed alarm reactivated, hourly rounding initiated, provider notified via covering line. Fall risk\ncare plan updated."
+    },
+    {
+      "id": "OT-001",
+      "type": "Occupational Therapy",
+      "discipline": "Occupational Therapy",
+      "author": "OT",
+      "timestamp": "2026-07-18T09:30:00-07:00",
+      "provenance": "authored-for-demo",
+      "text": "Toileting and self-care assessment. Patient requires contact guard to standby assist for toilet\ntransfers, unable to manage lower-body dressing independently secondary to hip precautions and\nreduced standing tolerance.\n\nNot safe for independent transfers at this time. Recommend continued OT, reassess in 3 days."
+    }
+  ]
+}
