@@ -128,7 +128,17 @@
   .cchk .g{color:var(--good);margin-right:8px}
   .cchk .ts{color:var(--faint);font:11px ui-monospace,monospace}
 
-  .importpanel textarea{width:100%;min-height:100px;border:1px solid var(--line);border-radius:8px;padding:9px;font:12px ui-monospace,Menlo,Consolas,monospace;background:var(--bg);color:var(--ink)}
+  /* import form */
+  .impgrid label{display:block;font-size:12px;font-weight:650;color:var(--ink);margin:12px 0 4px}
+  .opt{font-weight:400;color:var(--faint);font-size:11px;margin-left:4px}
+  .req{font-weight:400;color:var(--evline);font-size:11px;margin-left:4px}
+  .fin{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font-size:13px}
+  .fta{width:100%;min-height:88px;padding:9px 11px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:13px/1.5 var(--serif);resize:vertical}
+  .docrow{border:1px solid var(--line);border-radius:8px;padding:8px;margin-bottom:8px;display:grid;grid-template-columns:1fr 160px auto;gap:8px;align-items:center}
+  .docrow .dr_text{grid-column:1/-1;min-height:70px}
+  .docrow select,.docrow .dr_ts{padding:7px 9px;border:1px solid var(--line);border-radius:7px;background:var(--panel);color:var(--ink);font-size:13px}
+  .dr_del{background:none;border:1px solid var(--line);border-radius:7px;color:var(--muted);cursor:pointer;font-size:16px;line-height:1;padding:5px 9px}
+  .adv{margin-top:12px} .adv summary{cursor:pointer;font-size:12.5px;color:var(--muted)}
   .card{background:var(--panel);border:1px solid var(--line);border-radius:11px;box-shadow:var(--shadow)}
 </style>
 </head>
@@ -145,15 +155,6 @@
       <h3>Cases</h3>
       <div id="caseList"></div>
       <button class="linkbtn" id="importToggle">Import a chart&hellip;</button>
-      <div class="importpanel card" id="importPanel" style="display:none;padding:12px;margin-top:6px">
-        <div class="hint" style="margin-bottom:6px">Paste a native chart JSON or an Abridge FHIR record.</div>
-        <textarea id="importText" spellcheck="false"></textarea>
-        <div style="margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-          <input type="file" id="importFile" accept=".json" style="font-size:12px"/>
-          <button class="ghost" id="importBtn">Load</button>
-          <span class="hint" id="importStatus"></span>
-        </div>
-      </div>
     </aside>
 
     <main>
@@ -372,23 +373,77 @@ function setSigned(msg){
   if(activeTab==='note') renderEncounter();
 }
 
-// import
-document.getElementById('importToggle').onclick=()=>{const p=document.getElementById('importPanel');p.style.display=p.style.display==='none'?'block':'none';};
-document.getElementById('importFile').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>document.getElementById('importText').value=r.result;r.readAsText(f);};
-document.getElementById('importBtn').onclick=async()=>{
-  const st=document.getElementById('importStatus');let obj;
-  try{obj=JSON.parse(document.getElementById('importText').value);}catch(e){st.textContent='Invalid JSON';return;}
+// ---------- import (sectioned form) ----------
+const IMPORT_DISCIPLINES=['Physical Therapy','Occupational Therapy','Speech-Language Pathology','Nursing','Pharmacy','Provider'];
+function val(id){const e=document.getElementById(id);return e?e.value:'';}
+function docRowHtml(){
+  const opts=IMPORT_DISCIPLINES.map(d=>`<option>${d}</option>`).join('');
+  return `<div class="docrow"><select class="dr_disc">${opts}</select>
+    <input class="dr_ts" placeholder="2026-07-17 14:00 (optional)"/>
+    <button class="dr_del" type="button" title="Remove">&times;</button>
+    <textarea class="dr_text" placeholder="Paste this discipline's note"></textarea></div>`;
+}
+function openImportModal(){
+  openModal(`
+    <div class="mhead"><div class="mt">Import a chart</div><button class="xbtn" onclick="closeModal()">&times;</button></div>
+    <div class="mbody"><div class="impgrid">
+      <label>Patient name <span class="opt">optional</span></label>
+      <input class="fin" id="imp_name" placeholder="e.g. Jane Doe"/>
+      <label>Status / context <span class="opt">optional</span></label>
+      <input class="fin" id="imp_status" placeholder="e.g. POD 4, right hip hemiarthroplasty"/>
+      <label>Encounter transcript <span class="opt">optional</span></label>
+      <textarea class="fta" id="imp_transcript" placeholder="DR: ...&#10;PT: ..."></textarea>
+      <label>Clinical note / draft to sign <span class="req">required</span></label>
+      <textarea class="fta" id="imp_note" placeholder="Paste or type the ambient-generated or manual note"></textarea>
+      <label>Interdisciplinary notes <span class="opt">the PT / nursing / OT notes the physician didn't see</span></label>
+      <div id="imp_docs"></div>
+      <button class="ghost" id="imp_adddoc" type="button">+ Add a note</button>
+      <details class="adv"><summary>Advanced: paste JSON / FHIR instead</summary>
+        <textarea class="fta" id="imp_json" style="margin-top:8px" placeholder='{ "note_under_review": {...}, "documents": [...] }  — or an Abridge FHIR record'></textarea>
+        <button class="ghost" id="imp_jsonload" type="button">Load JSON</button>
+      </details>
+      <div class="hint" id="importStatus" style="margin-top:10px"></div>
+    </div></div>
+    <div class="mfoot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn primary" id="imp_load">Load into review</button></div>`);
+  const docsEl=document.getElementById('imp_docs');
+  const addRow=()=>{docsEl.insertAdjacentHTML('beforeend',docRowHtml());docsEl.lastElementChild.querySelector('.dr_del').onclick=e=>e.target.closest('.docrow').remove();};
+  addRow(); addRow();
+  document.getElementById('imp_adddoc').onclick=addRow;
+  document.getElementById('imp_load').onclick=loadFromForm;
+  document.getElementById('imp_jsonload').onclick=loadFromJson;
+}
+function loadFromForm(){
+  const st=document.getElementById('importStatus');
+  const note=val('imp_note').trim();
+  if(!note){st.textContent='A clinical note / draft is required.';return;}
+  const name=val('imp_name').trim(), status=val('imp_status').trim(), transcript=val('imp_transcript').trim();
+  const docs=[...document.querySelectorAll('#imp_docs .docrow')]
+    .map(row=>({disc:row.querySelector('.dr_disc').value, ts:row.querySelector('.dr_ts').value.trim(), text:row.querySelector('.dr_text').value.trim()}))
+    .filter(d=>d.text)
+    .map((d,i)=>({id:'DOC-'+(i+1), type:d.disc, discipline:d.disc, author:'', timestamp:d.ts, provenance:'imported', text:d.text}));
+  const chart={chart_id:'imported', title:name||'Imported chart', subtitle:'imported',
+    patient:{name:name||'Imported patient', status, setting:'', mrn:'', age:'', sex:''},
+    note_under_review:{id:'NOTE', type:'Clinical Note (draft under review)', discipline:'Provider', author:'', timestamp:'', provenance:'imported', text:note},
+    documents:docs};
+  if(transcript) chart.transcript={id:'TRANSCRIPT', type:'Doctor-Patient Encounter Transcript', discipline:'Provider', author:'', timestamp:'', provenance:'imported', text:transcript};
+  finishImport(chart);
+}
+async function loadFromJson(){
+  const st=document.getElementById('importStatus'); let obj;
+  try{obj=JSON.parse(val('imp_json'));}catch(e){st.textContent='Invalid JSON.';return;}
   st.textContent='Importing…';
   const r=await fetch('/api/import',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({data:obj})});
-  const c=await r.json(); if(!r.ok){st.textContent=c.error||'failed';return;}
-  importedChart=c;
-  if(!document.querySelector('.case[data-id="__imported__"]')){
-    const el=document.createElement('div');el.className='case';el.dataset.id='__imported__';
-    el.innerHTML=`<div class="nm">${esc(c.patient?.name||'Imported')}</div><div class="dx">imported chart</div>`;
-    el.onclick=()=>selectCase('__imported__');document.getElementById('caseList').appendChild(el);
-  }
-  st.textContent='Loaded'; document.getElementById('importPanel').style.display='none'; selectCase('__imported__');
-};
+  const c=await r.json(); if(!r.ok){st.textContent=c.error||'Import failed.';return;}
+  finishImport(c);
+}
+function finishImport(chart){
+  importedChart=chart;
+  let el=document.querySelector('.case[data-id="__imported__"]');
+  if(!el){el=document.createElement('div');el.className='case';el.dataset.id='__imported__';el.onclick=()=>selectCase('__imported__');document.getElementById('caseList').appendChild(el);}
+  el.innerHTML=`<div class="nm">${esc(chart.patient?.name||'Imported')}</div><div class="dx">imported chart</div>`;
+  closeModal(); selectCase('__imported__');
+}
+document.getElementById('importToggle').onclick=openImportModal;
 
 loadCases();
 </script>
