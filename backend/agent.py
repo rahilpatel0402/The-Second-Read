@@ -92,11 +92,13 @@ ANALYZE_SYSTEM = (
     "- Each evidence source_quote is the SHORTEST verbatim span that proves the "
     "mismatch (a clause, not the whole paragraph).\n"
     "- why_it_matters is ONE short sentence, at most ~18 words.\n"
-    "- suggested_edit: a concise, self-contained correction the physician can accept "
-    "as an ADDENDUM to the note - one short paragraph, clinically appropriate, "
-    "attributed to the source (discipline + date), correcting the flagged claim and "
-    "its downstream plan. It must read correctly on its own without replacing or "
-    "depending on surrounding note text.\n\n"
+    "- edits: the in-place corrections to apply if the physician approves. This runs "
+    "BEFORE signing, so the note itself is corrected - do NOT write an addendum. Each "
+    "edit has \"target\" (the exact flagged text to replace, copied VERBATIM - a "
+    "single line/sentence, NEVER spanning an accurate line) and \"replacement\" (the "
+    "corrected text, concise, clinically appropriate, attributed to the source "
+    "discipline + date). Provide one edit per flagged line (e.g. the functional-status "
+    "line, and separately the discharge-plan line). Never target an accurate line.\n\n"
     "Return ONLY JSON:\n"
     "{\n"
     "  \"headline\": str, \"confidence\": int (0-100),\n"
@@ -110,7 +112,7 @@ ANALYZE_SYSTEM = (
     "\"discipline\": str, \"timestamp\": str}], "
     "\"action\": \"query_therapy\"|\"query_nursing\"|\"query_provider\"|"
     "\"flag_stale\"|\"attributed_insert\"|\"strike\", \"action_target\": str, "
-    "\"drafted_text\": str, \"suggested_edit\": str}],\n"
+    "\"drafted_text\": str, \"edits\": [{\"target\": str, \"replacement\": str}]}],\n"
     "  \"cleared\": [{\"apparent_conflict\": str, \"why_consistent\": str, "
     "\"items\": [{\"label\": str, \"source_doc_id\": str, \"source_quote\": str, "
     "\"discipline\": str, \"timestamp\": str}]}]\n"
@@ -156,6 +158,10 @@ def analyze(chart, note_text):
         f["evidence"] = ev
         if f.get("downstream_quote") and not quote_in(f["downstream_quote"], note):
             f["downstream_quote"] = ""
+        # keep only edits whose target is a verbatim note span (safe in-place replace)
+        f["edits"] = [e for e in f.get("edits", [])
+                      if e.get("target") and e.get("replacement")
+                      and quote_in(e["target"], note)]
         findings.append(f)
 
     cleared = []

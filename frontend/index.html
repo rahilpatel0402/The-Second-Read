@@ -304,7 +304,8 @@ function renderDiscrepancy(r){
     </div>`;}).join('');
   const target=f0.action_target||ACTION_LABEL[f0.action]||'the care team';
   const routeShort=ACTION_LABEL[f0.action]||'care team';
-  const correction=f0.suggested_edit||f0.drafted_text||'';
+  const edits=f0.edits||[];
+  const correctionHtml=edits.length?`<div class="qbox"><div class="lbl2">Recommended correction &middot; applied in the note on approval</div>${edits.map(e=>`<p class="draft">${esc(e.replacement)}</p>`).join('')}</div>`:'';
   openModal(`
     <div class="mhead warn"><div class="mt">&#9888; Before you sign</div><button class="xbtn" onclick="closeModal()">&times;</button></div>
     <div class="mbody">
@@ -318,7 +319,7 @@ function renderDiscrepancy(r){
         <div class="col">
           <h4>What the rest of the chart says</h4>
           ${evHtml}
-          ${correction?`<div class="qbox"><div class="lbl2">Recommended correction &middot; adds an addendum on approval</div><p class="draft">${esc(correction)}</p></div>`:''}
+          ${correctionHtml}
           ${f0.why_it_matters?`<div class="why"><b>Why this matters</b>${esc(f0.why_it_matters)}</div>`:''}
         </div>
       </div>
@@ -327,7 +328,7 @@ function renderDiscrepancy(r){
       <button class="btn" data-a="dismiss">Dismiss</button>
       <button class="btn" data-a="signanyway">Sign anyway</button>
       <button class="btn" data-a="route">Send query to ${esc(routeShort)}</button>
-      <button class="btn primary" data-a="apply">Approve &amp; add to note</button>
+      ${edits.length?`<button class="btn primary" data-a="apply">Approve &amp; apply to note</button>`:''}
     </div>`);
   document.querySelectorAll('.ibtn').forEach(b=>b.onclick=()=>{const el=document.getElementById(b.dataset.full);if(el)el.style.display=el.style.display==='none'?'block':'none';});
   document.querySelectorAll('.mfoot .btn').forEach(b=>b.onclick=()=>{
@@ -339,14 +340,14 @@ function renderDiscrepancy(r){
   });
 }
 function applyCorrection(f){
-  const add=(f.suggested_edit||f.drafted_text||'').trim();
-  if(add){
-    const body=/^addendum/i.test(add)?add:"Addendum (Second Read, accepted by provider): "+add;
-    noteDraft=noteDraft.replace(/\s+$/,'')+"\n\n"+body;
-  }
-  signed=false; signedMsg="";
+  let d=noteDraft;
+  (f.edits||[]).forEach(e=>{
+    const pat=e.target.trim().replace(/[.*+?^${}()|[\]\\]/g,'\\$&').replace(/\s+/g,'\\s+');
+    try{ d=d.replace(new RegExp(pat), ()=>e.replacement); }catch(err){}
+  });
+  noteDraft=d; signed=false; signedMsg="";
   closeModal(); activeTab='note'; renderEncounter();
-  const h=document.getElementById('signHint'); if(h) h.textContent='Correction added as an addendum — review and re-sign.';
+  const h=document.getElementById('signHint'); if(h) h.textContent='Corrections applied in the note — review and sign.';
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
