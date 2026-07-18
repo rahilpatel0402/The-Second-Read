@@ -7,22 +7,20 @@
 <style>
   :root{
     --bg:#f5f4f0; --panel:#ffffff; --ink:#1c2530; --muted:#5f6b7a; --faint:#8a94a2;
-    --line:#e5e3dc; --navy:#1f3a5f; --navy-ink:#16304f; --accent:#c05621;
-    --flag:#fbe7b2; --flag-line:#e0a800; --warn-bg:#fdf6e3;
-    --good:#2f8f5b; --good-bg:#eaf6ee; --evline:#b23b3b;
-    --chip:#eeece5; --code:#0f1622; --code-ink:#d7e2f4;
+    --line:#e5e3dc; --navy:#1f3a5f; --accent:#c05621;
+    --flag:#fbe7b2; --flag-line:#e0a800; --warn-bg:#fdf6e3; --evline:#b23b3b;
+    --good:#2f8f5b; --good-bg:#eaf6ee; --chip:#eeece5;
     --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
     --shadow:0 1px 2px rgba(20,30,45,.05),0 6px 20px rgba(20,30,45,.06);
   }
   @media (prefers-color-scheme:dark){
     :root{ --bg:#0e1117; --panel:#161b22; --ink:#e6edf3; --muted:#9aa4b2; --faint:#6b7580;
-      --line:#2a313c; --navy:#7aa2d6; --navy-ink:#9cc0ee; --flag:#4a3f18; --flag-line:#c9a227;
-      --warn-bg:#211d12; --good:#4cc38a; --good-bg:#12241a; --chip:#1f2630; --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.35);}
+      --line:#2a313c; --navy:#7aa2d6; --flag:#4a3f18; --flag-line:#c9a227; --warn-bg:#211d12;
+      --good:#4cc38a; --good-bg:#12241a; --chip:#1f2630; --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.35);}
   }
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--ink);
     font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
-  a{color:inherit}
   .wrap{max-width:1220px;margin:0 auto;padding:22px 20px 90px}
   header.top{border-bottom:2px solid var(--navy);padding-bottom:12px}
   .brand{font:750 27px/1 var(--serif);letter-spacing:-.01em}
@@ -32,7 +30,6 @@
 
   .grid{display:grid;grid-template-columns:300px 1fr;gap:20px;margin-top:20px}
   @media (max-width:860px){.grid{grid-template-columns:1fr}}
-
   .side h3{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:2px 0 10px}
   .case{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:12px 13px;margin-bottom:11px;cursor:pointer;box-shadow:var(--shadow);border-left:4px solid transparent}
   .case:hover{border-color:var(--navy)}
@@ -41,7 +38,6 @@
   .case .dx{font-size:12.5px;color:var(--muted);margin-top:3px}
   .case .st{margin-top:7px;display:flex;gap:6px;flex-wrap:wrap}
   .pill{font-size:11px;padding:2px 8px;border-radius:999px;background:var(--chip);color:var(--muted);border:1px solid var(--line)}
-  .imp{margin-top:6px}
   .linkbtn{background:none;border:0;color:var(--navy);font-size:12.5px;cursor:pointer;padding:4px 0;text-decoration:underline}
 
   .enc{background:var(--panel);border:1px solid var(--line);border-radius:13px;box-shadow:var(--shadow);overflow:hidden}
@@ -54,10 +50,8 @@
   .tab.act{color:var(--ink);border-bottom-color:var(--accent);font-weight:650}
   .tabwrap{padding:18px 20px 20px}
 
-  pre.doc{margin:0;white-space:pre-wrap;font:13.5px/1.62 var(--serif);color:var(--ink)}
   .transcript .ln{margin:0 0 9px}
   .transcript .sp{font-weight:700;color:var(--navy)}
-
   .notearea{width:100%;min-height:300px;resize:vertical;border:1px solid var(--line);border-radius:9px;padding:14px;
     font:13.5px/1.6 var(--serif);background:var(--bg);color:var(--ink)}
   .signbar{margin-top:14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
@@ -65,76 +59,74 @@
   .sign:disabled{opacity:.6;cursor:default}
   .ghost{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:8px;padding:10px 14px;font-size:13px;cursor:pointer}
   .hint{color:var(--faint);font-size:12.5px}
+  .signed-chip{color:var(--good);font-size:13px;font-weight:600}
 
-  /* interdisciplinary */
   .idoc{border:1px solid var(--line);border-radius:9px;overflow:hidden;margin-bottom:12px}
   .idoc .bar{background:var(--navy);color:#fff;padding:8px 12px;font-size:12px;text-transform:uppercase;letter-spacing:.05em;display:flex;justify-content:space-between}
   .idoc .txt{padding:11px 13px;white-space:pre-wrap;font:13px/1.55 var(--serif)}
-  .redacted{filter:blur(4px);opacity:.5;user-select:none}
   .idnote{font-size:12.5px;color:var(--muted);margin-bottom:10px}
 
-  /* stage tracker */
-  .stages{display:flex;gap:7px;flex-wrap:wrap;margin:2px 0 8px}
-  .sp2{font-size:11.5px;padding:5px 10px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--panel)}
-  .sp2.active{color:var(--accent);border-color:var(--accent);font-weight:650}
-  .sp2.done{color:var(--good);border-color:var(--good)}
-  .spin{width:11px;height:11px;border:2px solid var(--line);border-top-color:var(--accent);border-radius:50%;display:inline-block;animation:sp .7s linear infinite;vertical-align:-1px}
-  @keyframes sp{to{transform:rotate(360deg)}}
-  details.reason{margin-top:8px}
-  details.reason summary{cursor:pointer;font-size:12.5px;color:var(--muted)}
-  .log{font:12px/1.5 ui-monospace,Menlo,Consolas,monospace;color:var(--muted);margin-top:6px}
-  .log .k{color:var(--navy)} .log .r{color:var(--good)}
-  .ledger{display:grid;gap:5px;margin-top:6px}
-  .lrow{border-left:3px solid var(--line);padding:5px 9px;background:var(--bg);border-radius:5px;font-size:12.5px}
-  .lrow b{font-weight:650}
+  /* ---------- modal ---------- */
+  .overlay{position:fixed;inset:0;background:rgba(15,22,32,.5);backdrop-filter:blur(3px);
+    display:none;align-items:center;justify-content:center;z-index:50;padding:24px}
+  .overlay.show{display:flex}
+  .modal{background:var(--panel);border-radius:16px;box-shadow:0 24px 70px rgba(0,0,0,.35);
+    width:100%;max-width:1000px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden}
+  .mhead{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;border-bottom:1px solid var(--line)}
+  .mhead .mt{display:flex;align-items:center;gap:10px;font-weight:700;font-size:16px}
+  .mhead .conf{font:12px ui-monospace,Menlo,Consolas,monospace;color:var(--muted)}
+  .mhead.warn .mt{color:var(--flag-line)}
+  .mhead.ok .mt{color:var(--good)}
+  .xbtn{background:none;border:0;color:var(--muted);font-size:22px;line-height:1;cursor:pointer;padding:0 4px}
+  .mbody{padding:20px 22px;overflow:auto}
+  .mfoot{padding:14px 22px;border-top:1px solid var(--line);display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
 
-  /* result: note echo */
-  .out{margin-top:20px}
-  .card{background:var(--panel);border:1px solid var(--line);border-radius:13px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:16px}
-  .noteecho .hd{display:flex;justify-content:space-between;align-items:center;padding:13px 18px;border-bottom:1px solid var(--line)}
-  .noteecho .who{font:650 16px/1.1 var(--serif)}
-  .noteecho .who small{display:block;color:var(--muted);font:400 12px/1.3 -apple-system,sans-serif;margin-top:2px}
-  .noteecho .kind{color:var(--faint);font-size:12.5px}
-  .noteecho .bd{padding:14px 18px}
-  pre.notehl{margin:0;white-space:pre-wrap;font:13.5px/1.62 var(--serif)}
-  pre.notehl mark{background:var(--flag);color:inherit;border-bottom:2px solid var(--flag-line);padding:1px 2px;border-radius:2px}
-  .verified{margin-top:10px;font-size:12.5px;color:var(--muted);display:flex;gap:7px;align-items:flex-start}
-  .verified .i{color:var(--good);font-weight:700}
-
-  /* finding card */
-  .finding{border:1px solid var(--flag-line);border-radius:13px;background:var(--warn-bg);box-shadow:var(--shadow);margin-bottom:16px;overflow:hidden}
-  .finding .fh{display:flex;justify-content:space-between;align-items:center;padding:13px 18px;border-bottom:1px solid var(--line)}
-  .finding .fh .t{font-weight:700;display:flex;gap:9px;align-items:center}
-  .finding .fh .warn{color:var(--flag-line);font-size:18px}
-  .conf{font:12px ui-monospace,Menlo,Consolas,monospace;color:var(--muted)}
-  .finding .fb{padding:14px 18px}
-  .headline{font-size:14.5px;margin:0 0 12px}
-  .ev{border:1px solid var(--line);border-radius:9px;background:var(--panel);padding:10px 12px;margin-bottom:9px}
-  .ev .evh{display:flex;justify-content:space-between;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:4px}
-  .ev .evq{font-size:13.5px;color:var(--evline)}
-  .why{background:var(--flag);border-radius:9px;padding:11px 13px;font-size:13px;margin:6px 0 12px}
-  .why b{display:block;text-transform:uppercase;font-size:11px;letter-spacing:.05em;color:var(--navy-ink);margin-bottom:3px}
-  .qbox .lbl2{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);border-left:3px solid var(--navy);padding-left:8px;margin-bottom:6px}
-  .draft{white-space:pre-wrap;font:12.5px/1.55 var(--serif);color:var(--ink);border-left:3px solid var(--navy);padding:0 0 0 8px;margin:0 0 12px}
-  .acts{display:flex;gap:9px;flex-wrap:wrap}
-  .btn{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:9px 14px;font-size:13px;cursor:pointer;color:var(--ink)}
-  .btn.primary{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+  .btn{border:1px solid var(--line);background:var(--panel);border-radius:9px;padding:10px 16px;font-size:14px;cursor:pointer;color:var(--ink)}
+  .btn.primary{background:var(--navy);color:#fff;border-color:var(--navy)}
   .btn.routed{color:var(--good);border-color:var(--good);cursor:default}
 
-  /* signed (supported) card */
-  .signed{border:1px solid var(--good);background:var(--good-bg)}
-  .signed .fh{border-bottom-color:rgba(47,143,91,.25)}
-  .signed .t{color:var(--good)}
-  .cleared summary{cursor:pointer;font-size:13.5px;color:var(--ink);padding:11px 18px}
-  .cleared .cbody{padding:0 18px 16px}
+  /* loading */
+  .load{display:flex;flex-direction:column;align-items:center;gap:16px;padding:26px 10px 20px;text-align:center}
+  .load .big{font:600 18px/1.3 var(--serif)}
+  .stages{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+  .sp2{font-size:12px;padding:6px 12px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+  .sp2.active{color:var(--accent);border-color:var(--accent);font-weight:650}
+  .sp2.done{color:var(--good);border-color:var(--good)}
+  .readlist{font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:5px;margin-top:4px}
+  .readlist .g{color:var(--good)}
+  .spin{width:14px;height:14px;border:2px solid var(--line);border-top-color:var(--accent);border-radius:50%;display:inline-block;animation:sp .7s linear infinite;vertical-align:-2px}
+  @keyframes sp{to{transform:rotate(360deg)}}
+
+  /* discrepancy: two columns */
+  .headline{font-size:15px;margin:0 0 16px;line-height:1.45}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media (max-width:760px){.cols{grid-template-columns:1fr}}
+  .col h4{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0 0 8px}
+  .draftcard{border:1px solid var(--line);border-radius:11px;background:var(--bg);padding:14px}
+  pre.notehl{margin:0;white-space:pre-wrap;font:13px/1.6 var(--serif)}
+  pre.notehl mark{background:var(--flag);color:inherit;border-bottom:2px solid var(--flag-line);padding:1px 2px;border-radius:2px}
+  .ev{border:1px solid var(--line);border-left:4px solid var(--evline);border-radius:9px;background:var(--panel);padding:11px 13px;margin-bottom:10px}
+  .ev .evh{display:flex;justify-content:space-between;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:5px}
+  .ev .evq{font-size:13.5px;color:var(--evline)}
+  .why{background:var(--flag);border-radius:10px;padding:11px 13px;font-size:13px;margin-top:14px}
+  .why b{display:block;text-transform:uppercase;font-size:11px;letter-spacing:.05em;color:var(--navy);margin-bottom:3px}
+  .qbox{margin-top:14px}
+  .qbox .lbl2{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);border-left:3px solid var(--navy);padding-left:8px;margin-bottom:6px}
+  .draft{white-space:pre-wrap;font:12.5px/1.55 var(--serif);color:var(--ink);border-left:3px solid var(--navy);padding-left:8px;margin:0}
+  .verified{margin-top:16px;font-size:12.5px;color:var(--muted);display:flex;gap:7px;align-items:flex-start}
+  .verified .i{color:var(--good);font-weight:700}
+
+  /* supported */
+  .okwrap{padding:6px 2px}
+  .okline{font-size:15px;margin-bottom:14px}
+  .cleared summary{cursor:pointer;font-size:13.5px;color:var(--ink)}
+  .cwhy{font-size:13px;color:var(--muted);margin:10px 0 6px}
   .cchk{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-top:1px solid var(--line);font-size:13.5px}
   .cchk .g{color:var(--good);margin-right:8px}
   .cchk .ts{color:var(--faint);font:11px ui-monospace,monospace}
-  .cwhy{font-size:13px;color:var(--muted);margin:8px 0}
 
-  .banner-signed{background:var(--good-bg);border:1px solid var(--good);color:var(--good);border-radius:9px;padding:10px 14px;font-weight:600;margin-bottom:14px}
-  .importpanel{margin-top:12px}
   .importpanel textarea{width:100%;min-height:100px;border:1px solid var(--line);border-radius:8px;padding:9px;font:12px ui-monospace,Menlo,Consolas,monospace;background:var(--bg);color:var(--ink)}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:11px;box-shadow:var(--shadow)}
 </style>
 </head>
 <body>
@@ -142,23 +134,21 @@
   <header class="top">
     <div class="brand">The Second Read<span class="dot">.</span></div>
     <div class="tag">Does today&rsquo;s note still describe today&rsquo;s patient? The Second Read is embedded in the signature.</div>
-    <div class="thesis">&ldquo;The scribe only heard the doctor&rsquo;s visit. The Second Read reads everyone else&rsquo;s &mdash; the nurse at 10pm, the therapist at 2pm &mdash; and that&rsquo;s where the patient&rsquo;s real story is.&rdquo;</div>
+    <div class="thesis">&ldquo;The scribe only heard the doctor&rsquo;s visit. The Second Read reads everyone else&rsquo;s &mdash; the nurse at 10pm, the therapist at 2pm.&rdquo;</div>
   </header>
 
   <div class="grid">
     <aside class="side">
       <h3>Cases</h3>
       <div id="caseList"></div>
-      <div class="imp">
-        <button class="linkbtn" id="importToggle">Import a chart&hellip;</button>
-        <div class="importpanel card" id="importPanel" style="display:none;padding:12px">
-          <div class="hint" style="margin-bottom:6px">Paste a native chart JSON or an Abridge FHIR record.</div>
-          <textarea id="importText" spellcheck="false" placeholder='{ "note_under_review": {...}, "documents": [...] }'></textarea>
-          <div style="margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-            <input type="file" id="importFile" accept=".json" style="font-size:12px"/>
-            <button class="ghost" id="importBtn">Load</button>
-            <span class="hint" id="importStatus"></span>
-          </div>
+      <button class="linkbtn" id="importToggle">Import a chart&hellip;</button>
+      <div class="importpanel card" id="importPanel" style="display:none;padding:12px;margin-top:6px">
+        <div class="hint" style="margin-bottom:6px">Paste a native chart JSON or an Abridge FHIR record.</div>
+        <textarea id="importText" spellcheck="false"></textarea>
+        <div style="margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <input type="file" id="importFile" accept=".json" style="font-size:12px"/>
+          <button class="ghost" id="importBtn">Load</button>
+          <span class="hint" id="importStatus"></span>
         </div>
       </div>
     </aside>
@@ -176,215 +166,179 @@
         </div>
         <div class="tabwrap" id="tabwrap"></div>
       </section>
-
-      <div class="out" id="out"></div>
     </main>
   </div>
 </div>
 
+<div class="overlay" id="overlay"><div class="modal" id="modal"></div></div>
+
 <script>
-const STAGES=[["retrieve","Retrieve"],["extract","Extract"],["reconcile","Reconcile"],["route","Route"],["act","Act"]];
-const ACTION_LABEL={query_therapy:"Physical Therapy",query_nursing:"Nursing",query_provider:"Provider",flag_stale:"record owner",attributed_insert:"Provider",strike:"Provider"};
+const STAGES=["Retrieve","Extract","Reconcile","Route","Act"];
+const ACTION_LABEL={query_therapy:"Physical Therapy",query_nursing:"Nursing",query_provider:"Provider",flag_stale:"the record owner",attributed_insert:"Provider",strike:"Provider"};
 let cases=[], current=null, importedChart=null, activeTab="note", noteDraft="";
 
 function esc(s){return (s||"").replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
 function tshort(t){return (t||"").replace('T',' ').slice(0,16);}
 
 async function loadCases(){
-  const r=await fetch('/api/charts'); cases=(await r.json()).charts;
+  cases=(await (await fetch('/api/charts')).json()).charts;
   document.getElementById('caseList').innerHTML=cases.map(c=>`
     <div class="case" data-id="${esc(c.id)}">
       <div class="nm">${esc(c.patient_name)}</div>
       <div class="dx">${esc(c.subtitle||'')}</div>
-      <div class="st">
-        <span class="pill">${esc(String(c.age||''))}${esc(c.sex||'')}</span>
-        <span class="pill">${esc(c.status||'')}</span>
-      </div>
+      <div class="st"><span class="pill">${esc(String(c.age||''))}${esc(c.sex||'')}</span><span class="pill">${esc(c.status||'')}</span></div>
     </div>`).join('');
   document.querySelectorAll('.case').forEach(el=>el.onclick=()=>selectCase(el.dataset.id));
   if(cases.length) selectCase(cases[0].id);
 }
-
 async function selectCase(id){
   let chart;
-  if(id==='__imported__' && importedChart){ chart=importedChart; }
-  else { const r=await fetch('/api/chart/'+encodeURIComponent(id)); chart=await r.json(); }
+  if(id==='__imported__'&&importedChart) chart=importedChart;
+  else chart=await (await fetch('/api/chart/'+encodeURIComponent(id))).json();
   current=chart; noteDraft=chart.note_under_review.text; activeTab="note";
   document.querySelectorAll('.case').forEach(el=>el.classList.toggle('sel',el.dataset.id===id));
   renderEncounter();
-  document.getElementById('out').innerHTML='';
 }
-
 function renderEncounter(){
-  const p=current.patient||{};
+  const p=current.patient||{}, note=current.note_under_review;
   document.getElementById('encTitle').textContent=current.title||p.name||'';
-  const note=current.note_under_review;
   document.getElementById('encMeta').innerHTML=
-    [`${esc(String(p.age||''))} ${esc(p.sex||'')}`,esc(p.setting||''),`MRN ${esc(p.mrn||'-')}`,esc(p.status||''),
-     `note ${esc(tshort(note.timestamp))}`].filter(Boolean).map(esc=>`<span>${esc}</span>`).join('<span class="sep">&middot;</span>');
+    [`${esc(String(p.age||''))} ${esc(p.sex||'')}`,esc(p.setting||''),`MRN ${esc(p.mrn||'-')}`,esc(p.status||''),`note ${esc(tshort(note.timestamp))}`]
+    .filter(Boolean).map(v=>`<span>${v}</span>`).join('<span class="sep">&middot;</span>');
   document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('act',t.dataset.tab===activeTab));
   const w=document.getElementById('tabwrap');
-  if(activeTab==='note') w.innerHTML=noteTab();
-  else if(activeTab==='transcript') w.innerHTML=transcriptTab();
-  else w.innerHTML=chartTab();
+  w.innerHTML=activeTab==='note'?noteTab():activeTab==='transcript'?transcriptTab():chartTab();
   if(activeTab==='note') wireNoteTab();
 }
-
 function noteTab(){
   return `<textarea class="notearea" id="noteArea" spellcheck="false">${esc(noteDraft)}</textarea>
-    <div class="signbar">
-      <button class="sign" id="signBtn">Sign note</button>
+    <div class="signbar"><button class="sign" id="signBtn">Sign note</button>
       <button class="ghost" id="resetNote">Reset</button>
-      <span class="hint" id="signHint">The Second Read runs automatically before the signature is committed.</span>
-    </div>`;
+      <span class="hint" id="signHint">The Second Read runs automatically before the signature commits.</span></div>`;
 }
 function wireNoteTab(){
   const ta=document.getElementById('noteArea');
   ta.oninput=()=>{noteDraft=ta.value;};
   document.getElementById('signBtn').onclick=sign;
-  document.getElementById('resetNote').onclick=()=>{noteDraft=current.note_under_review.text;ta.value=noteDraft;};
+  document.getElementById('resetNote').onclick=()=>{noteDraft=current.note_under_review.text;ta.value=noteDraft;document.getElementById('signHint').textContent='';};
 }
 function transcriptTab(){
   const t=current.transcript; if(!t) return '<div class="hint">No transcript.</div>';
-  const html=esc(t.text).split('\n').map(l=>{
-    const m=l.match(/^([A-Z]{2,6}):(.*)$/);
-    return m?`<div class="ln"><span class="sp">${m[1]}:</span>${m[2]}</div>`:`<div class="ln">${l}</div>`;
-  }).join('');
+  const html=esc(t.text).split('\n').map(l=>{const m=l.match(/^([A-Z]{2,6}):(.*)$/);
+    return m?`<div class="ln"><span class="sp">${m[1]}:</span>${m[2]}</div>`:`<div class="ln">${l}</div>`;}).join('');
   return `<div class="hint" style="margin-bottom:10px">${esc(t.type)} &middot; ${esc(t.author||'')} &middot; ${esc(tshort(t.timestamp))}</div><div class="transcript">${html}</div>`;
 }
 function chartTab(){
-  const docs=current.documents||[];
-  return `<div class="idnote">These interdisciplinary notes live in the chart and are what The Second Read reconciles the physician&rsquo;s note against &mdash; the notes the physician never saw during the visit.</div>`+
-    docs.map(d=>`<div class="idoc"><div class="bar"><span>${esc(d.discipline)}</span><span>${esc(tshort(d.timestamp))}</span></div><div class="txt">${esc(d.text)}</div></div>`).join('');
+  return `<div class="idnote">The interdisciplinary notes the physician never saw during the visit &mdash; what The Second Read reconciles the note against.</div>`+
+    (current.documents||[]).map(d=>`<div class="idoc"><div class="bar"><span>${esc(d.discipline)}</span><span>${esc(tshort(d.timestamp))}</span></div><div class="txt">${esc(d.text)}</div></div>`).join('');
 }
-
 document.getElementById('tabs').onclick=(e)=>{const t=e.target.closest('.tab');if(!t)return;activeTab=t.dataset.tab;renderEncounter();};
 
-// highlight note_quotes in the note text (whitespace-flexible)
 function highlightNote(text,quotes){
-  let marked=text;
+  const O='@@MK_O@@',C='@@MK_C@@';let marked=text;
   quotes.filter(Boolean).forEach(q=>{
     const pat=q.trim().replace(/[.*+?^${}()|[\]\\]/g,'\\$&').replace(/\s+/g,'\\s+');
-    try{ marked=marked.replace(new RegExp(pat),m=>''+m+''); }catch(e){}
+    try{marked=marked.replace(new RegExp(pat),m=>O+m+C);}catch(e){}
   });
-  return esc(marked).replace(//g,'<mark>').replace(//g,'</mark>');
+  return esc(marked).split(O).join('<mark>').split(C).join('</mark>');
 }
+
+// ---------- modal ----------
+function openModal(html){document.getElementById('modal').innerHTML=html;document.getElementById('overlay').classList.add('show');}
+function closeModal(){document.getElementById('overlay').classList.remove('show');}
+document.getElementById('overlay').onclick=(e)=>{if(e.target.id==='overlay')closeModal();};
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 
 async function sign(){
-  const btn=document.getElementById('signBtn'); btn.disabled=true; btn.textContent='Reading the chart…';
-  document.getElementById('signHint').textContent='';
-  const out=document.getElementById('out');
-  const done=new Set();
-  out.innerHTML=`<div class="card" style="padding:14px 18px">
-    <div style="font-weight:650;margin-bottom:8px">Second read &mdash; before you sign</div>
-    <div class="stages" id="stages"></div>
-    <details class="reason"><summary>How it reasoned (retrieval &amp; cited ledger)</summary>
-      <div class="log" id="log"></div><div class="ledger" id="ledger"></div></details>
-  </div>`;
-  const renderStages=(active)=>{document.getElementById('stages').innerHTML=STAGES.map(([k,l],i)=>{
-    let c='sp2'; if(done.has(k))c+=' done'; else if(k===active)c+=' active';
-    const ic=done.has(k)?'✓':(k===active?'<span class="spin"></span>':'');
-    return `<span class="${c}">${i+1}. ${l} ${ic}</span>`;}).join('');};
-  renderStages('retrieve');
+  const docs=current.documents||[];
+  openModal(`<div class="mhead"><div class="mt"><span class="spin"></span> Second read</div><button class="xbtn" onclick="closeModal()">&times;</button></div>
+    <div class="mbody"><div class="load">
+      <div class="big">Reading the rest of the chart&hellip;</div>
+      <div class="stages" id="mstages"></div>
+      <div class="readlist" id="mread">${docs.map(d=>`<div data-id="${esc(d.id)}"><span style="opacity:.4">&#9711;</span> ${esc(d.discipline)} note &middot; ${esc(tshort(d.timestamp))}</div>`).join('')}</div>
+    </div></div>`);
+  let si=0;
+  const paint=()=>{document.getElementById('mstages').innerHTML=STAGES.map((s,i)=>`<span class="sp2 ${i<si?'done':i===si?'active':''}">${i+1}. ${s}</span>`).join('');};
+  paint();
+  const timer=setInterval(()=>{ if(si<STAGES.length-1)si++; paint();
+    const rd=document.getElementById('mread'); if(rd){const items=rd.children;const k=Math.min(si,items.length);
+      for(let j=0;j<k;j++)items[j].innerHTML=`<span class="g">&#10003;</span> ${items[j].textContent.trim().replace(/^[^A-Za-z]+/,'')}`;}
+  },650);
 
-  const findings=[]; let cleared=[]; let result=null;
-  const log=()=>document.getElementById('log'), ledgerEl=()=>document.getElementById('ledger');
-
-  const resp=await fetch('/api/review',{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({chart:current,note:noteDraft})});
-  const reader=resp.body.getReader(), dec=new TextDecoder(); let buf='';
-
-  const handle=(ev)=>{
-    if(ev.type==='stage'){const order=STAGES.map(s=>s[0]);for(let i=0;i<order.indexOf(ev.stage);i++)done.add(order[i]);renderStages(ev.stage);}
-    else if(ev.type==='retrieve_action'){const d=document.createElement('div');
-      d.innerHTML=ev.action==='search'?`<span class="k">search</span> &ldquo;${esc(ev.query)}&rdquo; &rarr; ${ev.found.map(f=>esc(f.id)).join(', ')||'&mdash;'}`
-        :`<span class="r">read</span> ${esc(ev.doc_id)} &middot; ${esc(ev.discipline)}`;
-      log()&&log().appendChild(d);}
-    else if(ev.type==='ledger'){done.add('extract');renderStages('reconcile');
-      if(ledgerEl())ledgerEl().innerHTML=ev.entries.map(e=>`<div class="lrow"><b>${esc(e.fact)}:</b> ${esc(e.value)} <span style="color:var(--faint)">[${esc(e.source_doc_id)}]</span></div>`).join('');}
-    else if(ev.type==='finding'){findings.push(ev.finding);}
-    else if(ev.type==='cleared'){cleared=ev.cleared;}
-    else if(ev.type==='result'){result=ev;}
-    else if(ev.type==='error'){out.innerHTML=`<div class="card" style="padding:16px;color:var(--evline)">Error: ${esc(ev.message)}</div>`;}
-  };
-  while(true){const {value,done:rd}=await reader.read();if(rd)break;
-    buf+=dec.decode(value,{stream:true});let nl;
-    while((nl=buf.indexOf('\n\n'))!==-1){const chunk=buf.slice(0,nl);buf=buf.slice(nl+2);
-      const line=chunk.split('\n').find(l=>l.startsWith('data:'));
-      if(line){try{handle(JSON.parse(line.slice(5).trim()));}catch(e){}}}}
-
-  STAGES.forEach(([k])=>done.add(k));
-  if(result) renderResult(result,findings,cleared);
-  btn.disabled=false; btn.textContent='Sign note';
+  let result;
+  try{
+    const resp=await fetch('/api/review',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chart:current,note:noteDraft})});
+    result=await resp.json();
+    if(!resp.ok||result.error) throw new Error(result.error||('HTTP '+resp.status));
+  }catch(e){ clearInterval(timer);
+    openModal(`<div class="mhead"><div class="mt">Second read</div><button class="xbtn" onclick="closeModal()">&times;</button></div>
+      <div class="mbody" style="color:var(--evline)">Could not complete the review: ${esc(e.message)}</div>
+      <div class="mfoot"><button class="btn" onclick="closeModal()">Close</button></div>`); return; }
+  clearInterval(timer);
+  if(result.status==='clarification_recommended'&&result.findings.length) renderDiscrepancy(result);
+  else renderSupported(result);
 }
 
-function renderResult(result,findings,cleared){
-  const out=document.getElementById('out');
-  const reasonEl=out.querySelector('.reason');
-  const reasoning=reasonEl?`<div class="card" style="padding:12px 18px">${reasonEl.outerHTML}</div>`:'';
-  let html='';
-
-  // note echo with highlighted drifting lines
-  const quotes=[]; findings.forEach(f=>{quotes.push(f.note_quote); if(f.downstream_quote)quotes.push(f.downstream_quote);});
-  const p=current.patient||{};
-  html+=`<div class="card noteecho">
-    <div class="hd"><div class="who">${esc(p.name)}<small>${esc(String(p.age||''))}${esc(p.sex||'')} &middot; ${esc(p.status||'')} &middot; ${esc(p.setting||'')}</small></div>
-      <div class="kind">Physician note &middot; ${findings.length?'draft':'signed'}</div></div>
-    <div class="bd"><pre class="notehl">${highlightNote(noteDraft,quotes)}</pre>
-      ${result.verified_consistent?`<div class="verified"><span class="i">&#9432;</span><span>${findings.length?'Flagged lines highlighted. ':''}${esc(result.verified_consistent)}</span></div>`:''}
-    </div></div>`;
-
-  if(findings.length){
-    findings.forEach((f,i)=>{
-      const target=f.action_target||ACTION_LABEL[f.action]||'the care team';
-      html+=`<div class="finding" data-i="${i}">
-        <div class="fh"><div class="t"><span class="warn">&#9888;</span> Second read &mdash; before you sign</div>
-          <div class="conf">${result.confidence!=null?result.confidence+'% confidence':''}</div></div>
-        <div class="fb">
-          <p class="headline">${esc(i===0?result.headline||f.title:f.title)}</p>
-          ${f.evidence.map(e=>`<div class="ev"><div class="evh"><span>${esc(e.discipline)}</span><span>${esc(tshort(e.timestamp))}</span></div><div class="evq">&ldquo;${esc(e.source_quote)}&rdquo;</div></div>`).join('')}
-          ${f.why_it_matters?`<div class="why"><b>Why this matters</b>${esc(f.why_it_matters)}</div>`:''}
-          <div class="qbox"><div class="lbl2">Suggested query to ${esc(target)}</div><p class="draft">${esc(f.drafted_text)}</p></div>
-          <div class="acts">
-            <button class="btn primary" data-act="amend">Amend note</button>
-            <button class="btn" data-act="route">Send query to ${esc(ACTION_LABEL[f.action]||'care team')}</button>
-            <button class="btn" data-act="signanyway">Sign anyway</button>
-            <button class="btn" data-act="dismiss">Dismiss</button>
-          </div>
-        </div></div>`;
-    });
-  } else {
-    html+=`<div class="card signed">
-      <div class="fh"><div class="t">&#10003; Signed</div><div class="conf">${result.confidence!=null?result.confidence+'% confidence':''} &middot; ${tshort(current.note_under_review.timestamp)}</div></div>
-      <div class="fb" style="padding-top:12px;padding-bottom:4px"><div style="font-size:14px">Checked against ${result.docs_checked} interdisciplinary notes. ${esc(result.headline||'Consistent.')}</div></div>
-      ${cleared.length?`<details class="cleared"><summary>&#128065; Second read considered and cleared ${cleared.length} apparent conflict${cleared.length>1?'s':''}</summary>
-        <div class="cbody">${cleared.map(c=>`<div class="cwhy">${esc(c.why_consistent)}</div>${c.items.map(it=>`<div class="cchk"><span><span class="g">&#10003;</span>${esc(it.label)}</span><span class="ts">${esc(it.discipline)} &middot; ${esc(tshort(it.timestamp))}</span></div>`).join('')}`).join('<hr style="border:0;border-top:1px solid var(--line);margin:12px 0">')}</div>
-      </details>`:''}
-    </div>`;
-  }
-
-  html+=reasoning;
-  out.innerHTML=html;
-  wireActions();
-}
-
-function wireActions(){
-  document.querySelectorAll('.finding').forEach(card=>{
-    card.querySelectorAll('.btn').forEach(b=>{
-      b.onclick=()=>{
-        const act=b.dataset.act;
-        if(act==='amend'){activeTab='note';renderEncounter();window.scrollTo({top:0,behavior:'smooth'});}
-        else if(act==='route'){b.textContent='✓ Query routed';b.classList.add('routed');}
-        else if(act==='dismiss'){card.remove();}
-        else if(act==='signanyway'){
-          const out=document.getElementById('out');
-          const b2=document.createElement('div');b2.className='banner-signed';
-          b2.textContent='Signed with open queries — overridden by clinician.';
-          out.prepend(b2);
-        }
-      };
-    });
+function renderDiscrepancy(r){
+  const quotes=[]; r.findings.forEach(f=>{quotes.push(f.note_quote);if(f.downstream_quote)quotes.push(f.downstream_quote);});
+  const evHtml=r.findings.flatMap(f=>f.evidence.map(e=>
+    `<div class="ev"><div class="evh"><span>${esc(e.discipline)}</span><span>${esc(tshort(e.timestamp))}</span></div><div class="evq">&ldquo;${esc(e.source_quote)}&rdquo;</div></div>`)).join('');
+  const f0=r.findings[0];
+  const target=f0.action_target||ACTION_LABEL[f0.action]||'the care team';
+  const routeShort=ACTION_LABEL[f0.action]||'care team';
+  openModal(`
+    <div class="mhead warn"><div class="mt">&#9888; Before you sign</div>
+      <div style="display:flex;gap:12px;align-items:center"><span class="conf">${r.confidence!=null?r.confidence+'% confidence':''}</span><button class="xbtn" onclick="closeModal()">&times;</button></div></div>
+    <div class="mbody">
+      <p class="headline">${esc(r.headline||f0.title)}</p>
+      <div class="cols">
+        <div class="col">
+          <h4>Clinician&rsquo;s draft</h4>
+          <div class="draftcard"><pre class="notehl">${highlightNote(noteDraft,quotes)}</pre></div>
+          ${r.verified_consistent?`<div class="verified"><span class="i">&#9432;</span><span>${esc(r.verified_consistent)}</span></div>`:''}
+        </div>
+        <div class="col">
+          <h4>What the rest of the chart says</h4>
+          ${evHtml}
+          ${f0.why_it_matters?`<div class="why"><b>Why this matters</b>${esc(f0.why_it_matters)}</div>`:''}
+          <div class="qbox"><div class="lbl2">Drafted query to ${esc(target)}</div><p class="draft">${esc(f0.drafted_text)}</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="mfoot">
+      <button class="btn" data-a="dismiss">Dismiss</button>
+      <button class="btn" data-a="signanyway">Sign anyway</button>
+      <button class="btn" data-a="route">Send query to ${esc(routeShort)}</button>
+      <button class="btn primary" data-a="amend">Amend note</button>
+    </div>`);
+  document.querySelectorAll('.mfoot .btn').forEach(b=>b.onclick=()=>{
+    const a=b.dataset.a;
+    if(a==='amend'){closeModal();activeTab='note';renderEncounter();window.scrollTo({top:0,behavior:'smooth'});}
+    else if(a==='route'){b.textContent='✓ Query routed';b.classList.add('routed');}
+    else if(a==='dismiss'){closeModal();}
+    else if(a==='signanyway'){closeModal();setSigned('Signed with an open query to '+routeShort+'.');}
   });
+}
+
+function renderSupported(r){
+  const cl=r.cleared||[];
+  const clearedHtml=cl.length?`<details class="cleared" open><summary>&#128065; Second read considered and cleared ${cl.length} apparent conflict${cl.length>1?'s':''}</summary>
+    ${cl.map(c=>`<div class="cwhy">${esc(c.why_consistent)}</div>${(c.items||[]).map(it=>`<div class="cchk"><span><span class="g">&#10003;</span>${esc(it.label)}</span><span class="ts">${esc(it.discipline)} &middot; ${esc(tshort(it.timestamp))}</span></div>`).join('')}`).join('<div style="height:12px"></div>')}
+    </details>`:'';
+  openModal(`
+    <div class="mhead ok"><div class="mt">&#10003; Ready to sign &mdash; consistent</div>
+      <div style="display:flex;gap:12px;align-items:center"><span class="conf">${r.confidence!=null?r.confidence+'% confidence':''}</span><button class="xbtn" onclick="closeModal()">&times;</button></div></div>
+    <div class="mbody"><div class="okwrap">
+      <div class="okline">Checked against ${r.docs_checked} interdisciplinary notes. ${esc(r.headline||'The note is consistent with the chart.')}</div>
+      ${clearedHtml}
+    </div></div>
+    <div class="mfoot"><button class="btn" onclick="closeModal()">Close</button><button class="btn primary" data-a="sign">Sign note</button></div>`);
+  const sb=document.querySelector('.mfoot .btn[data-a="sign"]'); if(sb) sb.onclick=()=>{closeModal();setSigned('Signed — consistent with the chart.');};
+}
+
+function setSigned(msg){
+  const h=document.getElementById('signHint'); if(h){h.className='signed-chip';h.textContent='✓ '+msg;}
+  const b=document.getElementById('signBtn'); if(b){b.textContent='Signed';b.disabled=true;}
 }
 
 // import
@@ -397,14 +351,12 @@ document.getElementById('importBtn').onclick=async()=>{
   const r=await fetch('/api/import',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({data:obj})});
   const c=await r.json(); if(!r.ok){st.textContent=c.error||'failed';return;}
   importedChart=c;
-  const list=document.getElementById('caseList');
   if(!document.querySelector('.case[data-id="__imported__"]')){
     const el=document.createElement('div');el.className='case';el.dataset.id='__imported__';
     el.innerHTML=`<div class="nm">${esc(c.patient?.name||'Imported')}</div><div class="dx">imported chart</div>`;
-    el.onclick=()=>selectCase('__imported__');list.appendChild(el);
+    el.onclick=()=>selectCase('__imported__');document.getElementById('caseList').appendChild(el);
   }
-  st.textContent='Loaded'; document.getElementById('importPanel').style.display='none';
-  selectCase('__imported__');
+  st.textContent='Loaded'; document.getElementById('importPanel').style.display='none'; selectCase('__imported__');
 };
 
 loadCases();

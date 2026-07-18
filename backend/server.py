@@ -1,15 +1,12 @@
 """The Second Read - FastAPI backend (serves API + the static frontend)."""
-import json
 import os
-import queue
-import threading
 
 from fastapi import FastAPI
-from fastapi.responses import StreamingResponse, FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel
 
 from chart import list_charts, load_chart, default_chart, normalize_import
-from agent import run_review
+from agent import analyze
 
 app = FastAPI(title="The Second Read")
 
@@ -53,33 +50,10 @@ def api_review(req: ReviewRequest):
     if not chart:
         return JSONResponse({"error": "no chart available"}, status_code=400)
     note_text = req.note if (req.note and req.note.strip()) else chart["note_under_review"]["text"]
-
-    q: "queue.Queue" = queue.Queue()
-    SENTINEL = object()
-
-    def emit(event):
-        q.put(event)
-
-    def worker():
-        try:
-            run_review(chart, note_text, emit)
-        except Exception as e:  # surface errors to the UI instead of hanging
-            q.put({"type": "error", "message": f"{type(e).__name__}: {e}"})
-        finally:
-            q.put(SENTINEL)
-
-    threading.Thread(target=worker, daemon=True).start()
-
-    def stream():
-        while True:
-            event = q.get()
-            if event is SENTINEL:
-                break
-            yield f"data: {json.dumps(event)}\n\n"
-
-    return StreamingResponse(stream(), media_type="text/event-stream",
-                             headers={"Cache-Control": "no-cache",
-                                      "X-Accel-Buffering": "no"})
+    try:
+        return JSONResponse(analyze(chart, note_text))
+    except Exception as e:  # surface errors to the UI instead of a blank modal
+        return JSONResponse({"error": f"{type(e).__name__}: {e}"}, status_code=500)
 
 
 @app.get("/")

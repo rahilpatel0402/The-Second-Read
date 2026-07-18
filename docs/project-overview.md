@@ -40,8 +40,8 @@ cd backend && python -m uvicorn server:app --reload --port 8000
 
 Headless smoke test of a case: `python scripts/smoke.py <chart_id>` (e.g. `eleanor-hayes`, `marcus-bell`).
 
-Model defaults to `claude-opus-4-8`; set `THESECONDREAD_MODEL=claude-sonnet-5` in `backend/.env` for a faster live demo.
+Model defaults to `claude-sonnet-5` (fast + keeps the judgment; single reconciliation pass at `medium` effort, ~13–18s). Override with `THESECONDREAD_MODEL=claude-opus-4-8` for maximum reasoning depth.
 
 ## Stack
 
-Python · FastAPI (streams each stage to the browser over SSE) · Anthropic Claude (Opus 4.8, tool use) · vanilla HTML/JS frontend served locally. Cases live in `backend/data/cases/*.json`; the interdisciplinary notes live there as the evidence pool. `backend/chart.py` also ingests a native chart JSON or an Abridge FHIR record via the **Import** path.
+Python · FastAPI · Anthropic Claude (Sonnet 5, adaptive thinking) · vanilla HTML/JS frontend served locally. Signing runs one reconciliation pass; the browser shows the five stages as an animated modal, then renders a two-column *"before you sign"* view (draft + highlighted drift / cited evidence) or a *"consistent"* confirmation. Cases live in `backend/data/cases/*.json`; the interdisciplinary notes live there as the evidence pool. `backend/chart.py` also ingests a native chart JSON or an Abridge FHIR record via the **Import** path.

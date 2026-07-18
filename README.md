@@ -63,17 +63,15 @@ Optional smoke test (no browser): `python scripts/smoke.py <chart_id>`
 
 ### Model configuration
 
-Defaults to `claude-opus-4-8`. For a faster live demo you can override:
+Defaults to `claude-sonnet-5` (fast + keeps the clinical judgment; the review runs as a single reconciliation pass at `medium` effort, ~13–18s). For maximum reasoning depth you can override:
 
 ```
-THESECONDREAD_MODEL=claude-sonnet-5
+THESECONDREAD_MODEL=claude-opus-4-8
 ```
-
-(`THESECONDREAD_RETRIEVE_MODEL` overrides just the retrieval loop.)
 
 ## Stack
 
-Python · FastAPI (SSE streams the agent stage-by-stage to the browser) · Anthropic Claude (Opus 4.8, tool use) · vanilla HTML/JS frontend, served locally.
+Python · FastAPI · Anthropic Claude (Sonnet 5, adaptive thinking) · vanilla HTML/JS frontend, served locally. Signing runs one reconciliation pass; the browser shows the five stages as an animated modal while it runs, then renders the result — a two-column *"before you sign"* view (draft + highlighted drift on the left, cited evidence with timestamps on the right) or a clean *"consistent"* confirmation.
 
 ## Editing / adding cases
 
