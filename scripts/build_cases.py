@@ -15,14 +15,22 @@ Edit and re-run:  python scripts/build_cases.py
 """
 import json
 import os
+import re
 
 OUT_DIR = os.path.join(os.path.dirname(__file__), "..", "backend", "data", "cases")
 
 
-def doc(id, type, discipline, author, timestamp, text):
+def unwrap(t):
+    """Join soft-wrapped lines within a paragraph; keep blank-line paragraph breaks."""
+    paras = re.split(r"\n\s*\n", t.strip())
+    return "\n\n".join(re.sub(r"\s*\n\s*", " ", p).strip() for p in paras)
+
+
+def doc(id, type, discipline, author, timestamp, text, raw=False):
+    body = text.strip() if raw else unwrap(text)
     return {"id": id, "type": type, "discipline": discipline, "author": author,
             "timestamp": timestamp, "provenance": "authored-for-demo",
-            "text": text.strip()}
+            "text": body}
 
 
 # ============================ CASE 1 — ELEANOR HAYES ============================
@@ -54,7 +62,7 @@ DR: Excellent. Well, everything I'm seeing today looks like you're on track. Kee
     and if this pace holds we'll start talking about getting you home this week.
 PT: Oh, that would be wonderful. My daughter's been asking.
 DR: Let's aim for it. I'll check in again tomorrow.
-"""),
+""", raw=True),
     "note_under_review": doc(
         "NOTE", "Generated Clinical Note (DRAFT, pending signature)", "Provider",
         "Dr. A. Mensah, attending", "2026-07-18T11:52:00-07:00", """
@@ -133,7 +141,7 @@ DR: Understood. That's the left side again, it takes more to move in bed than it
     Sensation's intact. Good. You're moving in the right direction, Marcus.
 PT: Slow though.
 DR: Slow is fine. Slow and steady is exactly right after a stroke. Keep at it with the therapists.
-"""),
+""", raw=True),
     "note_under_review": doc(
         "NOTE", "Generated Clinical Note (DRAFT, pending signature)", "Provider",
         "Dr. S. Varghese, attending", "2026-07-18T10:34:00-07:00", """

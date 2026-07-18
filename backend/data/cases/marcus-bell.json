@@ -28,7 +28,7 @@
     "author": "Dr. S. Varghese, attending",
     "timestamp": "2026-07-18T10:34:00-07:00",
     "provenance": "authored-for-demo",
-    "text": "Subjective: 68-year-old man POD 6 from ischemic CVA with residual left hemiparesis, admitted for\nrehabilitation. Reports improving lower extremity function with persistent left upper extremity\nweakness. Endorses difficulty with sit-to-stand secondary to left-sided weakness and requires\nassistance with bed mobility. Engaged and motivated.\n\nObjective: Afebrile, vitals stable. Cardiovascular: regular rate and rhythm. Neurologic: left grip\nstrength diminished, left lower extremity strength improved from prior exam, sensation intact\nbilaterally, no new focal deficit.\n\nFunctional status: Ambulates 150 feet with rolling walker and supervision. Requires moderate assist\nfor transfers secondary to left-sided weakness. Progressing appropriately.\n\nAssessment & Plan: 1. Ischemic CVA with left hemiparesis, POD 6, improving. Continue intensive\nrehabilitation. 2. Left upper extremity weakness limiting transfers and bed mobility. Continue PT,\nOT. 3. Continue secondary stroke prevention, antiplatelet and statin therapy. 4. Reassess in 2 days."
+    "text": "Subjective: 68-year-old man POD 6 from ischemic CVA with residual left hemiparesis, admitted for rehabilitation. Reports improving lower extremity function with persistent left upper extremity weakness. Endorses difficulty with sit-to-stand secondary to left-sided weakness and requires assistance with bed mobility. Engaged and motivated.\n\nObjective: Afebrile, vitals stable. Cardiovascular: regular rate and rhythm. Neurologic: left grip strength diminished, left lower extremity strength improved from prior exam, sensation intact bilaterally, no new focal deficit.\n\nFunctional status: Ambulates 150 feet with rolling walker and supervision. Requires moderate assist for transfers secondary to left-sided weakness. Progressing appropriately.\n\nAssessment & Plan: 1. Ischemic CVA with left hemiparesis, POD 6, improving. Continue intensive rehabilitation. 2. Left upper extremity weakness limiting transfers and bed mobility. Continue PT, OT. 3. Continue secondary stroke prevention, antiplatelet and statin therapy. 4. Reassess in 2 days."
   },
   "documents": [
     {
@@ -38,7 +38,7 @@
       "author": "PT",
       "timestamp": "2026-07-18T08:45:00-07:00",
       "provenance": "authored-for-demo",
-      "text": "Ambulated 150 feet with rolling walker, supervision only, no physical assist required. Good\nendurance, no loss of balance, one standing rest break. Gait speed improving. GG0170I walk 10 feet,\n04 supervision. Continue gait training, advancing distance."
+      "text": "Ambulated 150 feet with rolling walker, supervision only, no physical assist required. Good endurance, no loss of balance, one standing rest break. Gait speed improving. GG0170I walk 10 feet, 04 supervision. Continue gait training, advancing distance."
     },
     {
       "id": "OT-002",
@@ -47,7 +47,7 @@
       "author": "OT",
       "timestamp": "2026-07-18T09:15:00-07:00",
       "provenance": "authored-for-demo",
-      "text": "Transfer and self-care assessment. Patient requires moderate assist for sit-to-stand and toilet\ntransfers secondary to left upper extremity weakness limiting push-off and grab-bar use. Standing\ntolerance improving. GG0170D sit to stand, 03 moderate assistance. Continue OT, focus on transfer\nmechanics."
+      "text": "Transfer and self-care assessment. Patient requires moderate assist for sit-to-stand and toilet transfers secondary to left upper extremity weakness limiting push-off and grab-bar use. Standing tolerance improving. GG0170D sit to stand, 03 moderate assistance. Continue OT, focus on transfer mechanics."
     },
     {
       "id": "NUR-002",
@@ -56,7 +56,7 @@
       "author": "RN",
       "timestamp": "2026-07-18T06:40:00-07:00",
       "provenance": "authored-for-demo",
-      "text": "Overnight care. Patient required two-person assist for repositioning and bed mobility per care plan\nsecondary to left hemiparesis. Assisted with turning q2h. No skin breakdown. Tolerated night without\ncomplaint."
+      "text": "Overnight care. Patient required two-person assist for repositioning and bed mobility per care plan secondary to left hemiparesis. Assisted with turning q2h. No skin breakdown. Tolerated night without complaint."
     }
   ]
 }

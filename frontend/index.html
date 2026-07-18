@@ -108,6 +108,9 @@
   .ev{border:1px solid var(--line);border-left:4px solid var(--evline);border-radius:9px;background:var(--panel);padding:11px 13px;margin-bottom:10px}
   .ev .evh{display:flex;justify-content:space-between;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:5px}
   .ev .evq{font-size:13.5px;color:var(--evline)}
+  .ibtn{background:none;border:1px solid var(--line);border-radius:50%;width:19px;height:19px;font-size:12px;line-height:1;color:var(--muted);cursor:pointer;padding:0}
+  .ibtn:hover{border-color:var(--navy);color:var(--navy)}
+  .evfull{margin-top:8px;padding:9px 11px;background:var(--bg);border:1px solid var(--line);border-radius:8px;font:12px/1.5 var(--serif);white-space:pre-wrap;color:var(--muted)}
   .why{background:var(--flag);border-radius:10px;padding:11px 13px;font-size:13px;margin-top:14px}
   .why b{display:block;text-transform:uppercase;font-size:11px;letter-spacing:.05em;color:var(--navy);margin-bottom:3px}
   .qbox{margin-top:14px}
@@ -283,13 +286,25 @@ async function sign(){
   else renderSupported(result);
 }
 
+function docText(id){
+  const all=(current.documents||[]).concat(current.transcript?[current.transcript]:[]);
+  const d=all.find(x=>x.id===id); return d?d.text:'';
+}
 function renderDiscrepancy(r){
-  const quotes=[]; r.findings.forEach(f=>{quotes.push(f.note_quote);if(f.downstream_quote)quotes.push(f.downstream_quote);});
-  const evHtml=r.findings.flatMap(f=>f.evidence.map(e=>
-    `<div class="ev"><div class="evh"><span>${esc(e.discipline)}</span><span>${esc(tshort(e.timestamp))}</span></div><div class="evq">&ldquo;${esc(e.source_quote)}&rdquo;</div></div>`)).join('');
   const f0=r.findings[0];
+  const quotes=[]; r.findings.forEach(f=>{quotes.push(f.note_quote);if(f.downstream_quote)quotes.push(f.downstream_quote);});
+  const evs=r.findings.flatMap(f=>f.evidence);
+  const evHtml=evs.map((e,i)=>{const fid='full_'+i; return `
+    <div class="ev">
+      <div class="evh"><span>${esc(e.discipline)}</span>
+        <span style="display:flex;gap:8px;align-items:center">${esc(tshort(e.timestamp))}
+          <button class="ibtn" data-full="${fid}" title="Read the full note">&#9432;</button></span></div>
+      <div class="evq">&ldquo;${esc(e.source_quote)}&rdquo;</div>
+      <div class="evfull" id="${fid}" style="display:none">${esc(docText(e.source_doc_id))}</div>
+    </div>`;}).join('');
   const target=f0.action_target||ACTION_LABEL[f0.action]||'the care team';
   const routeShort=ACTION_LABEL[f0.action]||'care team';
+  const correction=f0.suggested_edit||f0.drafted_text||'';
   openModal(`
     <div class="mhead warn"><div class="mt">&#9888; Before you sign</div>
       <div style="display:flex;gap:12px;align-items:center"><span class="conf">${r.confidence!=null?r.confidence+'% confidence':''}</span><button class="xbtn" onclick="closeModal()">&times;</button></div></div>
@@ -305,7 +320,7 @@ function renderDiscrepancy(r){
           <h4>What the rest of the chart says</h4>
           ${evHtml}
           ${f0.why_it_matters?`<div class="why"><b>Why this matters</b>${esc(f0.why_it_matters)}</div>`:''}
-          <div class="qbox"><div class="lbl2">Drafted query to ${esc(target)}</div><p class="draft">${esc(f0.drafted_text)}</p></div>
+          ${correction?`<div class="qbox"><div class="lbl2">Recommended correction &middot; adds an addendum on approval</div><p class="draft">${esc(correction)}</p></div>`:''}
         </div>
       </div>
     </div>
@@ -313,15 +328,27 @@ function renderDiscrepancy(r){
       <button class="btn" data-a="dismiss">Dismiss</button>
       <button class="btn" data-a="signanyway">Sign anyway</button>
       <button class="btn" data-a="route">Send query to ${esc(routeShort)}</button>
-      <button class="btn primary" data-a="amend">Amend note</button>
+      <button class="btn primary" data-a="apply">Approve &amp; add to note</button>
     </div>`);
+  document.querySelectorAll('.ibtn').forEach(b=>b.onclick=()=>{const el=document.getElementById(b.dataset.full);if(el)el.style.display=el.style.display==='none'?'block':'none';});
   document.querySelectorAll('.mfoot .btn').forEach(b=>b.onclick=()=>{
     const a=b.dataset.a;
-    if(a==='amend'){closeModal();activeTab='note';renderEncounter();window.scrollTo({top:0,behavior:'smooth'});}
+    if(a==='apply'){applyCorrection(f0);}
     else if(a==='route'){b.textContent='✓ Query routed';b.classList.add('routed');}
     else if(a==='dismiss'){closeModal();}
     else if(a==='signanyway'){closeModal();setSigned('Signed with an open query to '+routeShort+'.');}
   });
+}
+function applyCorrection(f){
+  const add=(f.suggested_edit||f.drafted_text||'').trim();
+  if(add){
+    const body=/^addendum/i.test(add)?add:"Addendum (Second Read, accepted by provider): "+add;
+    noteDraft=noteDraft.replace(/\s+$/,'')+"\n\n"+body;
+  }
+  signed=false; signedMsg="";
+  closeModal(); activeTab='note'; renderEncounter();
+  const h=document.getElementById('signHint'); if(h) h.textContent='Correction added as an addendum — review and re-sign.';
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 
 function renderSupported(r){

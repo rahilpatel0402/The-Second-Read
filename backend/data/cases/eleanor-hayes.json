@@ -28,7 +28,7 @@
     "author": "Dr. A. Mensah, attending",
     "timestamp": "2026-07-18T11:52:00-07:00",
     "provenance": "authored-for-demo",
-    "text": "Subjective: 79-year-old woman POD 4 from right hip hemiarthroplasty, admitted for rehabilitation\nfollowing a mechanical fall at home. Reports feeling substantially improved and is eager to return\nhome, where she lived independently prior to admission. Endorses mild incisional pain, well\ncontrolled, without new numbness or paresthesia. Motivated and engaged with therapy.\n\nObjective: Afebrile, vitals stable. Cardiovascular: regular rate and rhythm. Pulmonary: clear\nbilaterally. Right hip incision clean, dry, intact, without erythema or drainage. Neurovascularly\nintact distally. Post-operative radiograph reviewed, prosthesis in good alignment.\n\nFunctional status: Patient ambulating in hallway with rolling walker, steady gait, tolerating\ntherapy well.\n\nAssessment & Plan: 1. Status post right hip hemiarthroplasty, POD 4, healing appropriately. Continue\ncurrent rehabilitation plan. 2. Functional recovery progressing. Anticipate discharge home in 5-7\ndays if current trajectory continues. 3. Continue DVT prophylaxis, pain management, and daily\ntherapy. 4. Will reassess tomorrow."
+    "text": "Subjective: 79-year-old woman POD 4 from right hip hemiarthroplasty, admitted for rehabilitation following a mechanical fall at home. Reports feeling substantially improved and is eager to return home, where she lived independently prior to admission. Endorses mild incisional pain, well controlled, without new numbness or paresthesia. Motivated and engaged with therapy.\n\nObjective: Afebrile, vitals stable. Cardiovascular: regular rate and rhythm. Pulmonary: clear bilaterally. Right hip incision clean, dry, intact, without erythema or drainage. Neurovascularly intact distally. Post-operative radiograph reviewed, prosthesis in good alignment.\n\nFunctional status: Patient ambulating in hallway with rolling walker, steady gait, tolerating therapy well.\n\nAssessment & Plan: 1. Status post right hip hemiarthroplasty, POD 4, healing appropriately. Continue current rehabilitation plan. 2. Functional recovery progressing. Anticipate discharge home in 5-7 days if current trajectory continues. 3. Continue DVT prophylaxis, pain management, and daily therapy. 4. Will reassess tomorrow."
   },
   "documents": [
     {
@@ -38,7 +38,7 @@
       "author": "PT",
       "timestamp": "2026-07-17T14:00:00-07:00",
       "provenance": "authored-for-demo",
-      "text": "Gait training attempted. Patient required maximal assist of two for sit-to-stand. Ambulated 8 feet\nwith rolling walker and moderate assist before requesting to sit, reporting dizziness and fatigue.\nSession terminated early.\n\nSection GG revised: GG0170I walk 10 feet, 02 substantial/maximal assistance. GG0170D sit to stand,\n02. Discharge readiness not yet established."
+      "text": "Gait training attempted. Patient required maximal assist of two for sit-to-stand. Ambulated 8 feet with rolling walker and moderate assist before requesting to sit, reporting dizziness and fatigue. Session terminated early.\n\nSection GG revised: GG0170I walk 10 feet, 02 substantial/maximal assistance. GG0170D sit to stand, 02. Discharge readiness not yet established."
     },
     {
       "id": "NUR-001",
@@ -47,7 +47,7 @@
       "author": "RN",
       "timestamp": "2026-07-17T22:15:00-07:00",
       "provenance": "authored-for-demo",
-      "text": "Patient found seated on floor at bedside at 22:05, attempting to self-transfer to bedside commode\nwithout calling for assistance. No injury, neuro checks initiated per protocol. Second unwitnessed\ntransfer attempt this shift.\n\nBed alarm reactivated, hourly rounding initiated, provider notified via covering line. Fall risk\ncare plan updated."
+      "text": "Patient found seated on floor at bedside at 22:05, attempting to self-transfer to bedside commode without calling for assistance. No injury, neuro checks initiated per protocol. Second unwitnessed transfer attempt this shift.\n\nBed alarm reactivated, hourly rounding initiated, provider notified via covering line. Fall risk care plan updated."
     },
     {
       "id": "OT-001",
@@ -56,7 +56,7 @@
       "author": "OT",
       "timestamp": "2026-07-18T09:30:00-07:00",
       "provenance": "authored-for-demo",
-      "text": "Toileting and self-care assessment. Patient requires contact guard to standby assist for toilet\ntransfers, unable to manage lower-body dressing independently secondary to hip precautions and\nreduced standing tolerance.\n\nNot safe for independent transfers at this time. Recommend continued OT, reassess in 3 days."
+      "text": "Toileting and self-care assessment. Patient requires contact guard to standby assist for toilet transfers, unable to manage lower-body dressing independently secondary to hip precautions and reduced standing tolerance.\n\nNot safe for independent transfers at this time. Recommend continued OT, reassess in 3 days."
     }
   ]
 }
