@@ -57,7 +57,9 @@ python -m uvicorn server:app --reload --port 8000
 # open http://localhost:8000
 ```
 
-Optional smoke test (no browser): `python scripts/smoke.py`
+**One-click launch / restart:** double-click **`scripts/start.bat`** (Windows). It frees port 8000 if something is stuck, starts the server with the venv, and opens the browser. A `Start The Second Read.bat` shortcut on the Desktop calls the same script.
+
+Optional smoke test (no browser): `python scripts/smoke.py <chart_id>`
 
 ### Model configuration
 
