@@ -151,7 +151,7 @@ def analyze(chart, note_text):
         f"THE REST OF THE CHART (quote verbatim from these):\n{docs_blob}"
     )
     resp = _client.messages.create(
-        model=MODEL, max_tokens=6000,
+        model=MODEL, max_tokens=8000,  # headroom: thinking tokens count toward the cap
         thinking={"type": "adaptive"},        # keeps the clinical judgment
         output_config={"effort": "medium"},   # ...but paces it for a live demo
         system=ANALYZE_SYSTEM,

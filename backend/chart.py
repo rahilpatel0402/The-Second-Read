@@ -1,8 +1,7 @@
-"""Chart loading, search, and a FHIR / raw-record ingestion path."""
+"""Chart loading and a FHIR / raw-record ingestion path."""
 import glob
 import json
 import os
-import re
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
 CASES_DIR = os.path.join(DATA_DIR, "cases")
@@ -58,34 +57,7 @@ def get_document(chart, doc_id):
     return None
 
 
-def _tokens(text):
-    return set(re.findall(r"[a-z0-9]+", text.lower()))
-
-
-def search_chart(chart, query, limit=6):
-    """Lightweight keyword-overlap search over the chart documents."""
-    q = _tokens(query)
-    scored = []
-    for d in all_documents(chart):
-        hay = f"{d['type']} {d['discipline']} {d['text']}"
-        overlap = len(q & _tokens(hay))
-        # small boost for query substrings appearing directly in the text
-        substr = sum(1 for w in query.lower().split() if len(w) > 3 and w in hay.lower())
-        score = overlap + substr
-        if score > 0:
-            snippet = d["text"].strip().replace("\n", " ")
-            scored.append((score, {
-                "id": d["id"],
-                "type": d["type"],
-                "discipline": d["discipline"],
-                "timestamp": d["timestamp"],
-                "snippet": snippet[:200] + ("..." if len(snippet) > 200 else ""),
-            }))
-    scored.sort(key=lambda x: -x[0])
-    return [d for _, d in scored[:limit]]
-
-
-# ---- Abridge FHIR ingestion (proves we speak their format) ----
+# ---- FHIR / raw-record ingestion ----
 
 def ingest_abridge_record(record):
     """Convert one raw Abridge synthetic-ambient-fhir record into a chart.

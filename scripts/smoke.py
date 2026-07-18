@@ -21,23 +21,19 @@ def main():
         t = ev.get("type")
         if t == "stage":
             print(f"\n=== STAGE: {ev['stage'].upper()} — {ev['label']} ===")
-        elif t == "retrieve_action":
-            if ev["action"] == "search":
-                print(f"  search_chart({ev['query']!r}) -> {[f['id'] for f in ev['found']]}")
-            else:
-                print(f"  read_document({ev['doc_id']}) [{ev['discipline']}]")
         elif t == "ledger":
             print(f"  ledger: {len(ev['entries'])} verified facts")
             for e in ev["entries"]:
                 print(f"    - {e['fact']}: {e['value']}  [{e['source_doc_id']}]")
         elif t == "finding":
             f = ev["finding"]
-            print(f"\n  FINDING [{f['action']} -> {f.get('action_target')}] {f['title']}")
-            print(f"    verdict={f['verdict']} severity={f.get('severity')}")
-            print(f"    note:   {f['note_quote'][:90]!r}")
+            print(f"\n  FINDING [{f.get('action')} -> {f.get('action_target')}] {f.get('title','')}")
+            print(f"    verdict={f.get('verdict')} severity={f.get('severity')}")
+            print(f"    note:   {f.get('note_quote','')[:90]!r}")
             for e in f.get("evidence", []):
                 print(f"    src [{e['discipline']}/{e['source_doc_id']}]: {e['source_quote'][:80]!r}")
-            print(f"    draft: {f['drafted_text'][:110]}...")
+            print(f"    fix:   {f.get('replacement','')[:110]}")
+            print(f"    query: {f.get('drafted_text','')[:110]}")
         elif t == "cleared":
             print(f"\n  CLEARED {len(ev['cleared'])} apparent conflict(s):")
             for c in ev["cleared"]:

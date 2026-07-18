@@ -300,6 +300,8 @@ async function sign(){
       <div class="mbody" style="color:var(--evline)">Could not complete the review: ${esc(e.message)}</div>
       <div class="mfoot"><button class="btn" onclick="closeModal()">Close</button></div>`); return; }
   clearInterval(timer);
+  // user closed the modal mid-review -> treat as canceled; never render or auto-sign
+  if(!document.getElementById('overlay').classList.contains('show')) return;
   if(result.status==='clarification_recommended'&&result.findings.length) renderDiscrepancy(result);
   else renderSupported(result);
 }
