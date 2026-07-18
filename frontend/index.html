@@ -118,6 +118,19 @@
   .draft{white-space:pre-wrap;font:12.5px/1.55 var(--serif);color:var(--ink);border-left:3px solid var(--navy);padding-left:8px;margin:0}
   .verified{margin-top:16px;font-size:12.5px;color:var(--muted);display:flex;gap:7px;align-items:flex-start}
   .verified .i{color:var(--good);font-weight:700}
+  /* per-sentence flag cards */
+  .flag{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:14px;background:var(--panel)}
+  .flag.applied{border-color:var(--good);background:var(--good-bg)}
+  .flagrow{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:700px){.flagrow{grid-template-columns:1fr}}
+  .flbl{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:5px}
+  .qnote{background:var(--flag);border-left:3px solid var(--flag-line);border-radius:6px;padding:8px 10px;font:13.5px/1.5 var(--serif)}
+  .flag.applied .qnote{text-decoration:line-through;opacity:.55}
+  .fcorr{margin-top:12px}
+  .corrtext{border-left:3px solid var(--navy);border-radius:6px;padding:8px 10px;font:13.5px/1.5 var(--serif);background:var(--bg)}
+  .fwhy{margin-top:9px;font-size:12.5px;color:var(--muted)}
+  .fact{margin-top:12px}
+  .btn.sm{padding:8px 14px;font-size:13px}
 
   /* supported */
   .okwrap{padding:6px 2px}
@@ -292,63 +305,55 @@ function docText(id){
   const d=all.find(x=>x.id===id); return d?d.text:'';
 }
 function renderDiscrepancy(r){
-  const f0=r.findings[0];
-  const quotes=[]; r.findings.forEach(f=>{quotes.push(f.note_quote);if(f.downstream_quote)quotes.push(f.downstream_quote);});
-  const evs=r.findings.flatMap(f=>f.evidence);
-  const evHtml=evs.map((e,i)=>{const fid='full_'+i; return `
-    <div class="ev">
-      <div class="evh"><span>${esc(e.discipline)}</span>
-        <span style="display:flex;gap:8px;align-items:center">${esc(tshort(e.timestamp))}
-          <button class="ibtn" data-full="${fid}" title="Read the full note">&#9432;</button></span></div>
-      <div class="evq">&ldquo;${esc(e.source_quote)}&rdquo;</div>
-      <div class="evfull" id="${fid}" style="display:none">${esc(docText(e.source_doc_id))}</div>
-    </div>`;}).join('');
-  const target=f0.action_target||ACTION_LABEL[f0.action]||'the care team';
-  const routeShort=ACTION_LABEL[f0.action]||'care team';
-  const edits=f0.edits||[];
-  const correctionHtml=edits.length?`<div class="qbox"><div class="lbl2">Recommended correction &middot; applied in the note on approval</div>${edits.map(e=>`<p class="draft">${esc(e.replacement)}</p>`).join('')}</div>`:'';
-  openModal(`
-    <div class="mhead warn"><div class="mt">&#9888; Before you sign</div><button class="xbtn" onclick="closeModal()">&times;</button></div>
-    <div class="mbody">
-      <p class="headline">${esc(r.headline||f0.title)}</p>
-      <div class="cols">
-        <div class="col">
-          <h4>Clinician&rsquo;s draft</h4>
-          <div class="draftcard"><pre class="notehl">${highlightNote(noteDraft,quotes)}</pre></div>
-          ${r.verified_consistent?`<div class="verified"><span class="i">&#9432;</span><span>${esc(r.verified_consistent)}</span></div>`:''}
-        </div>
-        <div class="col">
-          <h4>What the rest of the chart says</h4>
-          ${evHtml}
-          ${correctionHtml}
-          ${f0.why_it_matters?`<div class="why"><b>Why this matters</b>${esc(f0.why_it_matters)}</div>`:''}
-        </div>
+  const flags=r.findings;
+  const routeShort=ACTION_LABEL[(flags[0]||{}).action]||'Provider';
+  let evi=0;
+  const flagHtml=flags.map((f,fi)=>{
+    const evHtml=f.evidence.map(e=>{const fid='full_'+(evi++); return `
+      <div class="ev">
+        <div class="evh"><span>${esc(e.discipline)}</span>
+          <span style="display:flex;gap:8px;align-items:center">${esc(tshort(e.timestamp))}
+            <button class="ibtn" data-full="${fid}" title="Read the full note">&#9432;</button></span></div>
+        <div class="evq">&ldquo;${esc(e.source_quote)}&rdquo;</div>
+        <div class="evfull" id="${fid}" style="display:none">${esc(docText(e.source_doc_id))}</div>
+      </div>`;}).join('');
+    return `<div class="flag">
+      <div class="flagrow">
+        <div class="fcol"><div class="flbl">In the note</div><div class="qnote">&ldquo;${esc(f.note_quote)}&rdquo;</div></div>
+        <div class="fcol"><div class="flbl">The chart says</div>${evHtml}</div>
       </div>
+      <div class="fcorr"><div class="flbl">Suggested correction</div><div class="corrtext">${esc(f.replacement)}</div></div>
+      ${f.why_it_matters?`<div class="fwhy">${esc(f.why_it_matters)}</div>`:''}
+      <div class="fact"><button class="btn primary sm" data-a="approve" data-i="${fi}">Approve this change</button></div>
+    </div>`;
+  }).join('');
+  openModal(`
+    <div class="mhead warn"><div class="mt">&#9888; Before you sign &mdash; ${flags.length} flag${flags.length>1?'s':''}</div><button class="xbtn" onclick="closeModal()">&times;</button></div>
+    <div class="mbody">
+      ${r.headline?`<p class="headline">${esc(r.headline)}</p>`:''}
+      ${flagHtml}
+      ${r.verified_consistent?`<div class="verified"><span class="i">&#9432;</span><span>${esc(r.verified_consistent)}</span></div>`:''}
     </div>
     <div class="mfoot">
       <button class="btn" data-a="dismiss">Dismiss</button>
-      <button class="btn" data-a="signanyway">Sign anyway</button>
       <button class="btn" data-a="route">Send query to ${esc(routeShort)}</button>
-      ${edits.length?`<button class="btn primary" data-a="applysign">Approve &amp; sign corrected note</button>`:''}
+      <button class="btn primary" data-a="sign">Sign note</button>
     </div>`);
   document.querySelectorAll('.ibtn').forEach(b=>b.onclick=()=>{const el=document.getElementById(b.dataset.full);if(el)el.style.display=el.style.display==='none'?'block':'none';});
+  document.querySelectorAll('.flag .btn[data-a="approve"]').forEach(b=>b.onclick=()=>applyFlag(flags[+b.dataset.i], b));
   document.querySelectorAll('.mfoot .btn').forEach(b=>b.onclick=()=>{
     const a=b.dataset.a;
-    if(a==='applysign'){applyAndSign(f0);}
+    if(a==='sign'){closeModal();setSigned('Note signed.');}
     else if(a==='route'){b.textContent='✓ Query routed';b.classList.add('routed');}
     else if(a==='dismiss'){closeModal();}
-    else if(a==='signanyway'){closeModal();setSigned('Signed with an open query to '+routeShort+'.');}
   });
 }
-function applyAndSign(f){
-  let d=noteDraft;
-  (f.edits||[]).forEach(e=>{
-    const pat=e.target.trim().replace(/[.*+?^${}()|[\]\\]/g,'\\$&').replace(/\s+/g,'\\s+');
-    try{ d=d.replace(new RegExp(pat), ()=>e.replacement); }catch(err){}
-  });
-  noteDraft=d; activeTab='note';
-  closeModal();
-  setSigned('Corrected per the second read and signed.');
+function applyFlag(f, btn){
+  const pat=f.note_quote.trim().replace(/[.*+?^${}()|[\]\\]/g,'\\$&').replace(/\s+/g,'\\s+');
+  try{ noteDraft=noteDraft.replace(new RegExp(pat), ()=>f.replacement); }catch(e){}
+  signed=false; signedMsg="";
+  const card=btn.closest('.flag'); if(card) card.classList.add('applied');
+  btn.textContent='✓ Applied to draft'; btn.disabled=true; btn.classList.add('routed');
 }
 
 function renderSupported(r){

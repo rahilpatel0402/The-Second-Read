@@ -78,11 +78,13 @@ ANALYZE_SYSTEM = (
     "the SAME task (e.g. note implies steady/independent gait while therapy codes the "
     "walk task 02 substantial/maximal assist), or omits something that makes a stated "
     "claim or downstream plan unsafe.\n\n"
-    "CONSOLIDATE: one finding per underlying drift. If a functional claim and the "
-    "discharge/plan it drives are both wrong, raise ONE finding - primary claim in "
-    "note_quote, the driven decision line in downstream_quote, all cross-discipline "
-    "evidence attached. Flag ONLY drifting lines; never flag an accurate/unrelated "
-    "line (e.g. an accurate incision exam or post-op day).\n\n"
+    "ONE FLAG PER SENTENCE: produce one finding per individual note sentence that is "
+    "contradicted or made misleading by the chart. Each finding pairs exactly ONE "
+    "draft sentence (note_quote, verbatim) with the specific chart evidence that "
+    "contradicts THAT sentence, and a corrected version of THAT sentence. If two "
+    "sentences are wrong (e.g. the functional-status line and the discharge-plan "
+    "line), produce TWO findings. Never merge sentences into one finding, and never "
+    "flag an accurate sentence (e.g. an accurate incision exam or post-op day).\n\n"
     "NO QUOTE, NO FINDING: note_quote is copied verbatim from the note; every "
     "evidence source_quote and ledger source_quote is copied verbatim from its "
     "document. Route functional/mobility/discharge drift to Physical Therapy "
@@ -92,34 +94,27 @@ ANALYZE_SYSTEM = (
     "- Each evidence source_quote is the SHORTEST verbatim span that proves the "
     "mismatch (a clause, not the whole paragraph).\n"
     "- why_it_matters is ONE short sentence, at most ~18 words.\n"
-    "- edits: the in-place corrections to apply if the physician approves. This runs "
-    "BEFORE signing, so the note itself is corrected - do NOT write an addendum. EVERY "
-    "finding MUST include at least one edit (never an empty list). Each edit has "
-    "\"target\" (the exact existing note text to replace, copied VERBATIM - a single "
-    "line/sentence, NEVER spanning an accurate line) and \"replacement\" (the corrected "
-    "text, concise, clinically appropriate, attributed to the source discipline + "
-    "date). Rules by finding type:\n"
-    "   * Contradiction: rewrite each flagged line (e.g. the functional-status line, "
-    "and separately the discharge-plan line) so it matches the chart.\n"
-    "   * OMISSION (note leaves out something material): pick the most relevant "
-    "EXISTING note line - the one whose meaning the omission changes - use it verbatim "
-    "as target, and rewrite it so it incorporates the missing fact. Do NOT return "
-    "empty edits just because nothing is literally wrong; make the line complete.\n"
-    "   Never target an accurate line that needs no change.\n\n"
+    "- replacement: a corrected version of THIS sentence (note_quote), concise, "
+    "clinically appropriate, attributed to the source discipline + date. It replaces "
+    "the sentence in place when the clinician approves it, so it must read correctly "
+    "as a drop-in for note_quote. For a contradiction, rewrite the sentence to match "
+    "the chart; for an omission, rewrite it to incorporate the missing fact. Every "
+    "finding MUST have a replacement.\n\n"
     "Return ONLY JSON:\n"
     "{\n"
     "  \"headline\": str, \"confidence\": int (0-100),\n"
     "  \"verified_consistent\": str (one line: the accurate parts you checked),\n"
     "  \"ledger\": [{\"fact\": str, \"value\": str, \"source_doc_id\": str, "
     "\"source_quote\": str, \"timestamp\": str, \"discipline\": str}],\n"
-    "  \"findings\": [{\"title\": str, \"note_quote\": str, \"downstream_quote\": str, "
+    "  \"findings\": [{\"note_quote\": str, \"replacement\": str, "
+    "\"why_it_matters\": str, "
     "\"verdict\": \"contradicted\"|\"unsupported\"|\"stale\"|\"safety\", "
-    "\"severity\": \"high\"|\"medium\"|\"low\", \"why_it_matters\": str, "
+    "\"severity\": \"high\"|\"medium\"|\"low\", "
     "\"evidence\": [{\"source_doc_id\": str, \"source_quote\": str, "
     "\"discipline\": str, \"timestamp\": str}], "
     "\"action\": \"query_therapy\"|\"query_nursing\"|\"query_provider\"|"
     "\"flag_stale\"|\"attributed_insert\"|\"strike\", \"action_target\": str, "
-    "\"drafted_text\": str, \"edits\": [{\"target\": str, \"replacement\": str}]}],\n"
+    "\"drafted_text\": str}],\n"
     "  \"cleared\": [{\"apparent_conflict\": str, \"why_consistent\": str, "
     "\"items\": [{\"label\": str, \"source_doc_id\": str, \"source_quote\": str, "
     "\"discipline\": str, \"timestamp\": str}]}]\n"
@@ -155,7 +150,10 @@ def analyze(chart, note_text):
 
     findings = []
     for f in data.get("findings", []):
+        # a flag needs a verbatim draft sentence, >=1 cited evidence, and a replacement
         if not quote_in(f.get("note_quote", ""), note):
+            continue
+        if not (f.get("replacement") or "").strip():
             continue
         ev = [e for e in f.get("evidence", [])
               if (d := get_document(chart, e.get("source_doc_id", "")))
@@ -163,12 +161,6 @@ def analyze(chart, note_text):
         if not ev:
             continue
         f["evidence"] = ev
-        if f.get("downstream_quote") and not quote_in(f["downstream_quote"], note):
-            f["downstream_quote"] = ""
-        # keep only edits whose target is a verbatim note span (safe in-place replace)
-        f["edits"] = [e for e in f.get("edits", [])
-                      if e.get("target") and e.get("replacement")
-                      and quote_in(e["target"], note)]
         findings.append(f)
 
     cleared = []
