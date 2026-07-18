@@ -85,6 +85,22 @@ ANALYZE_SYSTEM = (
     "sentences are wrong (e.g. the functional-status line and the discharge-plan "
     "line), produce TWO findings. Never merge sentences into one finding, and never "
     "flag an accurate sentence (e.g. an accurate incision exam or post-op day).\n\n"
+    "FLAG ONLY WHAT IS MATERIAL AND FALSE: a flag must be severity \"high\" - it "
+    "changes safety, disposition/discharge, treatment, or reimbursement if signed "
+    "as-is - AND the sentence must actually be false or misleading for that same "
+    "task. The truth test comes FIRST and overrides materiality: if the sentence is "
+    "true (even if vague or less specific than the chart), it is NEVER a finding - "
+    "put it under cleared. Do NOT flag soft subjective characterizations (e.g. "
+    "'motivated and engaged'), tone, or minor wording a reasonable clinician would "
+    "sign.\n\n"
+    "FOLD CONSEQUENCES INTO THE PRIMARY FLAG: if a sentence is only wrong as a "
+    "downstream consequence of an already-flagged sentence, do NOT flag it "
+    "separately - mention the consequence in the primary flag's why_it_matters. "
+    "Plan-continuation boilerplate ('Continue current rehabilitation plan', "
+    "'continue current management') is ALWAYS a consequence, never its own flag. "
+    "Flag the smallest set of sentences the clinician must actually change - "
+    "typically the factual-claim sentence(s) and, if independently wrong, the "
+    "disposition/discharge sentence.\n\n"
     "NO QUOTE, NO FINDING: note_quote is copied verbatim from the note; every "
     "evidence source_quote and ledger source_quote is copied verbatim from its "
     "document. Route functional/mobility/discharge drift to Physical Therapy "
@@ -162,6 +178,12 @@ def analyze(chart, note_text):
             continue
         f["evidence"] = ev
         findings.append(f)
+
+    # severity gate: surface only material (high-severity) flags when any exist,
+    # so soft stylistic nits never dilute the signal
+    highs = [f for f in findings if f.get("severity") == "high"]
+    if highs:
+        findings = highs
 
     cleared = []
     for c in data.get("cleared", []):
