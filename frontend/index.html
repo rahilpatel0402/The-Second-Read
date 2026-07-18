@@ -306,8 +306,7 @@ function renderDiscrepancy(r){
   const routeShort=ACTION_LABEL[f0.action]||'care team';
   const correction=f0.suggested_edit||f0.drafted_text||'';
   openModal(`
-    <div class="mhead warn"><div class="mt">&#9888; Before you sign</div>
-      <div style="display:flex;gap:12px;align-items:center"><span class="conf">${r.confidence!=null?r.confidence+'% confidence':''}</span><button class="xbtn" onclick="closeModal()">&times;</button></div></div>
+    <div class="mhead warn"><div class="mt">&#9888; Before you sign</div><button class="xbtn" onclick="closeModal()">&times;</button></div>
     <div class="mbody">
       <p class="headline">${esc(r.headline||f0.title)}</p>
       <div class="cols">
@@ -319,8 +318,8 @@ function renderDiscrepancy(r){
         <div class="col">
           <h4>What the rest of the chart says</h4>
           ${evHtml}
-          ${f0.why_it_matters?`<div class="why"><b>Why this matters</b>${esc(f0.why_it_matters)}</div>`:''}
           ${correction?`<div class="qbox"><div class="lbl2">Recommended correction &middot; adds an addendum on approval</div><p class="draft">${esc(correction)}</p></div>`:''}
+          ${f0.why_it_matters?`<div class="why"><b>Why this matters</b>${esc(f0.why_it_matters)}</div>`:''}
         </div>
       </div>
     </div>
@@ -359,8 +358,7 @@ function renderSupported(r){
   // Consistent = the second read cleared it, so the signature commits now.
   setSigned('Note signed — consistent with the chart.');
   openModal(`
-    <div class="mhead ok"><div class="mt">&#10003; Note signed &mdash; consistent</div>
-      <div style="display:flex;gap:12px;align-items:center"><span class="conf">${r.confidence!=null?r.confidence+'% confidence':''}</span><button class="xbtn" onclick="closeModal()">&times;</button></div></div>
+    <div class="mhead ok"><div class="mt">&#10003; Note signed &mdash; consistent</div><button class="xbtn" onclick="closeModal()">&times;</button></div>
     <div class="mbody"><div class="okwrap">
       <div class="okline">Signed and checked against ${r.docs_checked} interdisciplinary notes. ${esc(r.headline||'The note is consistent with the chart.')}</div>
       ${clearedHtml}

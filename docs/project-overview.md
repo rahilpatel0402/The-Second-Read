@@ -6,9 +6,9 @@ Target setting: **post-acute care / skilled nursing facilities (SNFs)**, where d
 
 ## Pipeline
 
-The Second Read is **embedded in the "Sign note" action**. Signing runs a five-stage agentic pipeline against the rest of the chart before the signature commits:
+The Second Read is **embedded in the "Sign note" action**. Signing runs a single citation-grounded reconciliation pass against the rest of the chart before the signature commits, reasoning in five steps:
 
-1. **Retrieve** — a real Claude tool-use loop; the agent chooses which chart documents to pull (`search_chart`, `read_document`).
+1. **Retrieve** — the full interdisciplinary chart is pulled in for review: every PT, nursing, and OT note the physician never saw, plus the encounter transcript.
 2. **Extract** — builds a **cited state ledger**: each verified fact with a source quote, document id, and timestamp.
 3. **Reconcile** — compares the note against the ledger, per claim, applying clinical judgment (see [section-gg-reference.md](section-gg-reference.md)).
 4. **Route** — decides the action: query the discipline that owns the contradicting measure, flag a stale record, attributed insert, or strike. *Routing is a decision, not a classification.*

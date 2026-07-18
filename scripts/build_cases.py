@@ -10,6 +10,10 @@ Both are fully synthetic (no PHI). Each case ships:
 Case 1 (Eleanor Hayes)  -> a real drift: functional status contradicted by 3 disciplines.
 Case 2 (Marcus Bell)    -> an apparent conflict that is actually consistent (distinct
                            Section GG tasks); the Second Read must stay silent.
+Case 3 (Harold Byrne)   -> the provider is RIGHT and the chart is stale: the note correctly
+                           starts apixaban for new AFib (cardiology agrees), but the nursing
+                           MAR - timestamped AFTER the order - still shows anticoagulation
+                           held. The Second Read flags the record, not the doctor (flag_stale).
 
 Edit and re-run:  python scripts/build_cases.py
 """
@@ -185,9 +189,83 @@ complaint.
 }
 
 
+# ============================ CASE 3 — HAROLD BYRNE ============================
+# The provider is right; the CHART is stale. The note correctly starts apixaban for
+# new-onset AFib and cardiology agrees - but the nursing MAR, timestamped AFTER the
+# order, still shows anticoagulation held. The Second Read must NOT challenge the
+# doctor; it flags the stale record and routes the fix to the record owner (flag_stale).
+case3 = {
+    "chart_id": "harold-byrne",
+    "title": "Harold Byrne - SNF day 9, new-onset atrial fibrillation",
+    "subtitle": "The stale record",
+    "expected": "clarification_recommended",
+    "patient": {
+        "name": "Harold Byrne", "mrn": "SNF-330915",
+        "age": 76, "sex": "M", "setting": "SNF Rehab, Rm 133-C",
+        "status": "SNF day 9, new AFib", "admit_date": "2026-07-10",
+    },
+    "transcript": doc(
+        "TRANSCRIPT", "Doctor-Patient Encounter Transcript", "Provider",
+        "Dr. L. Okonkwo, attending", "2026-07-18T09:50:00-07:00", """
+DR: Morning, Harold. The heart monitor picked up something overnight I want to talk through with you.
+PT: The nurse said the rhythm was off.
+DR: That's right. Your heart slipped into an irregular rhythm - atrial fibrillation. It's new for you.
+PT: Is that the dangerous kind?
+DR: The rhythm itself we can manage. The real concern is stroke risk - in atrial fibrillation the blood can
+    pool and clot, so the standard of care is to start a blood thinner. With your age and blood pressure
+    history your stroke-risk score is high enough that the guideline is clear.
+PT: So a blood thinner. You're the doctor.
+DR: I'm starting you on apixaban, five milligrams twice a day. Cardiology looked at the strips this morning
+    and agrees with anticoagulating. I'll put the order in now and tell the nurses so tonight's dose isn't missed.
+PT: The rest of my pills stay the same?
+DR: Everything else stays. We'll keep you on the monitor and watch the rate.
+PT: Alright then.
+DR: Good. Let me have a quick listen and check how the walking's going, but the heart is the headline today.
+""", raw=True),
+    "note_under_review": doc(
+        "NOTE", "Generated Clinical Note (DRAFT, pending signature)", "Provider",
+        "Dr. L. Okonkwo, attending", "2026-07-18T10:05:00-07:00", """
+Subjective: 76-year-old man, SNF day 9, admitted for rehabilitation and reconditioning after
+hospitalization for community-acquired pneumonia, now resolved. Overnight telemetry captured new-onset
+atrial fibrillation with rapid ventricular response, since rate-controlled. Patient asymptomatic, denies
+chest pain, palpitations, or dyspnea.
+
+Objective: Afebrile, vitals stable, HR 78 and irregular. Cardiovascular: irregularly irregular rhythm,
+no murmur or gallop. Pulmonary: clear bilaterally. Telemetry: atrial fibrillation with controlled
+ventricular response.
+
+Assessment & Plan: 1. New-onset atrial fibrillation, SNF day 9. CHA2DS2-VASc 4 (age, hypertension, prior
+TIA); anticoagulation indicated for stroke prevention. Started apixaban 5 mg PO BID this morning;
+cardiology in agreement. 2. Continue telemetry and rate monitoring. 3. Continue rehabilitation; pneumonia
+resolved. 4. Reassess in 24 hours.
+"""),
+    "documents": [
+        doc("CARD-003", "Cardiology", "Cardiology", "Cardiology consult",
+            "2026-07-18T09:10:00-07:00", """
+Telemetry reviewed at bedside. Confirmed new-onset atrial fibrillation with rapid ventricular response
+overnight, now rate-controlled. No evidence of acute ischemia on rhythm strip. CHA2DS2-VASc elevated;
+recommend initiating oral anticoagulation for stroke prevention absent contraindication - apixaban a
+reasonable agent. Agree with attending plan.
+"""),
+        doc("NUR-003", "Nursing", "Nursing", "RN",
+            "2026-07-18T14:20:00-07:00", """
+Medication administration record reconciled for the 14:00 pass. Active anticoagulation: none. Therapeutic
+anticoagulation remains on hold per admission orders; patient on enoxaparin 40 mg SC daily for DVT
+prophylaxis only. No apixaban on the active MAR. Cardiac telemetry continued, rate controlled.
+"""),
+        doc("PT-003", "Physical Therapy", "Physical Therapy", "PT",
+            "2026-07-18T11:30:00-07:00", """
+Ambulated 250 feet with rolling walker, contact guard assist, no arrhythmia symptoms with activity,
+vitals stable with exertion. GG0170I walk 10 feet, 04 supervision. Endurance improving. Continue
+conditioning program.
+"""),
+    ],
+}
+
+
 def main():
     os.makedirs(OUT_DIR, exist_ok=True)
-    for case in (case1, case2):
+    for case in (case1, case2, case3):
         path = os.path.join(OUT_DIR, f"{case['chart_id']}.json")
         with open(path, "w", encoding="utf-8") as f:
             json.dump(case, f, indent=2, ensure_ascii=False)

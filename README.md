@@ -4,11 +4,15 @@
 
 Built for the Abridge Hackathon. Target setting: **post-acute care / skilled nursing facilities (SNFs)**, where documentation *is* reimbursement (PDPM) and stale, contradictory charts cause both denied claims and patient harm.
 
+## Why it matters
+
+In a SNF, the **Section GG functional lines** the physician signs map directly to the **PDPM PT/OT case-mix groups that set the daily rate** — so a functional claim that contradicts therapy's own coding is at once a reimbursement error *and* an audit/denial trigger, because payers reconcile the signed note against the same interdisciplinary record this agent reads. And when the *chart* is the stale one — a MAR that hasn't caught up to a new anticoagulation order — the gap is **missed doses and stroke risk**. The Second Read catches both, at the one moment a human is already looking: **the signature**.
+
 ## What it does
 
-The Second Read is **embedded in the "Sign note" action**. When the clinician signs an ambient-generated (or pasted) note, the agent runs an agentic pipeline against the rest of the chart *before the signature commits*:
+The Second Read is **embedded in the "Sign note" action**. When the clinician signs an ambient-generated (or pasted) note, the agent reconciles it against the rest of the chart *before the signature commits* — a single citation-grounded pass that reasons in five steps:
 
-1. **Retrieve** — a real Claude tool-use loop; the agent chooses which chart documents to pull (`search_chart`, `read_document`).
+1. **Retrieve** — the full interdisciplinary chart is pulled in for review: every PT, nursing, and OT note the physician never saw, plus the encounter transcript.
 2. **Extract** — builds a **cited state ledger**: each verified fact with a source quote, document id, and timestamp.
 3. **Reconcile** — compares the note against the ledger, per claim, applying clinical judgment (CMS Section GG tasks are distinct; accurate-but-coarser claims are not contradictions).
 4. **Route** — decides the action: query the discipline that owns the contradicting measure, flag a stale record, attributed insert, or strike. *Routing is a decision, not a classification.*
