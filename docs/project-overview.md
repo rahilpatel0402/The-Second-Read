@@ -22,12 +22,13 @@ Every finding and ledger entry must quote its source document **verbatim**. The 
 
 The Reconcile stage distinguishes a real discrepancy from an *apparent* conflict that is actually consistent. Consistent-but-apparent conflicts are surfaced as **cleared conflicts** with a reason, not fired as findings. This is what proves the tool has clinical judgment.
 
-## The two demonstration cases
+## The three demonstration cases
 
-Both are fully synthetic (no PHI). Each ships the encounter **transcript**, the ambient-generated **clinical note** under review, and the **interdisciplinary chart** (PT / Nursing / OT) that the Second Read reconciles against.
+All three are fully synthetic (no PHI). Each ships the encounter **transcript**, the ambient-generated **clinical note** under review, and the **interdisciplinary chart** (PT / Nursing / OT / consults) that the Second Read reconciles against.
 
 - **Eleanor Hayes** — 79 F, POD 4 right hip hemiarthroplasty (*the catch*). The note records "steady gait" and anticipates discharge in 5–7 days, but PT (8 ft, maximal assist), nursing (unwitnessed fall), and OT (unsafe transfers) document the opposite. → **Clarification recommended**, functional line flagged, query routed to Physical Therapy; incision exam and post-op day verified consistent and *not* flagged.
 - **Marcus Bell** — 68 M, POD 6 ischemic stroke (*the silence*). The note lists three different assist levels (supervision to walk, moderate assist to transfer, two-person assist for bed mobility) — three **distinct Section GG tasks** that legitimately differ in hemiparesis. → **Signs clean**, the apparent conflict considered and cleared.
+- **Harold Byrne** — 76 M, SNF day 9, new-onset atrial fibrillation (*the stale record*). The note correctly starts apixaban with written cardiology concurrence, but the 14:20 nursing MAR reconciliation still shows anticoagulation on hold — the order never landed. → **Flags the record, not the doctor**; query routed to nursing/pharmacy to reconcile the MAR. Proves the tool is bidirectional.
 
 ## Run
 

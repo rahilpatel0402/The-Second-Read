@@ -26,11 +26,13 @@ The Second Read is **embedded in the "Sign note" action**. When the clinician si
 
 Every finding and ledger entry must quote its source document **verbatim**. The backend re-verifies that each quote actually appears in the cited document (`agent.quote_in`); any finding it cannot cite is **suppressed, not guessed**. Hallucinated findings are structurally impossible to surface. This is the trust guarantee that makes a "challenge the doctor" tool safe to put in front of a clinician.
 
-## The two demonstration cases
+## The three demonstration cases
 
 **Case 1 — Eleanor Hayes, 79 F, POD 4 right hip hemiarthroplasty ("the catch").** The note (built from a mid-day self-report visit) records "steady gait" and anticipates discharge in 5–7 days. But within the last 36 hours PT documents 8 feet at maximal assist, nursing documents an unwitnessed fall, and OT documents unsafe transfers. → **Clarification recommended**: the functional line is flagged, evidence cited from all three disciplines, a query routed to Physical Therapy — while the incision exam and post-op day are verified consistent and *not* flagged.
 
 **Case 2 — Marcus Bell, 68 M, POD 6 ischemic stroke ("the silence").** The note lists three different assist levels — supervision to walk, moderate assist to transfer, two-person assist for bed mobility. A shallow tool fires a contradiction. The Second Read recognizes these as three **distinct Section GG tasks** that legitimately differ in hemiparesis. → **Signed clean**, 1–3 apparent conflicts considered and cleared. This is the case that proves clinical judgment and no false alarms.
+
+**Case 3 — Harold Byrne, 76 M, SNF day 9, new-onset atrial fibrillation ("the stale record").** The note correctly starts apixaban — a cardiology consult concurs in writing that morning. But the 14:20 nursing MAR reconciliation still shows anticoagulation on hold and no apixaban on the active MAR: the order never landed. → **The Second Read flags the record, not the doctor** — the query routes to nursing/pharmacy to reconcile the MAR before the first dose is missed. This is the case that proves the tool is bidirectional: it vindicates the provider when the chart is what's stale.
 
 The note is **editable** — paste or edit a claim and re-sign to watch it get challenged (or cleared).
 

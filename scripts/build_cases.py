@@ -1,7 +1,7 @@
 """
-Build the two demonstration cases for The Second Read.
+Build the three demonstration cases for The Second Read.
 
-Both are fully synthetic (no PHI). Each case ships:
+All are fully synthetic (no PHI). Each case ships:
   - transcript:        the doctor-patient encounter (what the scribe heard)
   - note_under_review: the ambient-generated clinical note, pending signature
   - documents:         the interdisciplinary chart (PT / Nursing / OT) - the notes
