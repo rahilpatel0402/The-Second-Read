@@ -176,6 +176,7 @@
 const STAGES=["Retrieve","Extract","Reconcile","Route","Act"];
 const ACTION_LABEL={query_therapy:"Physical Therapy",query_nursing:"Nursing",query_provider:"Provider",flag_stale:"the record owner",attributed_insert:"Provider",strike:"Provider"};
 let cases=[], current=null, importedChart=null, activeTab="note", noteDraft="";
+let signed=false, signedMsg="";
 
 function esc(s){return (s||"").replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
 function tshort(t){return (t||"").replace('T',' ').slice(0,16);}
@@ -196,6 +197,7 @@ async function selectCase(id){
   if(id==='__imported__'&&importedChart) chart=importedChart;
   else chart=await (await fetch('/api/chart/'+encodeURIComponent(id))).json();
   current=chart; noteDraft=chart.note_under_review.text; activeTab="note";
+  signed=false; signedMsg="";
   document.querySelectorAll('.case').forEach(el=>el.classList.toggle('sel',el.dataset.id===id));
   renderEncounter();
 }
@@ -211,16 +213,18 @@ function renderEncounter(){
   if(activeTab==='note') wireNoteTab();
 }
 function noteTab(){
+  const btn=signed?`<button class="sign" id="signBtn" disabled>&#10003; Signed</button>`
+                  :`<button class="sign" id="signBtn">Sign note</button>`;
+  const status=signed?`<span class="signed-chip" id="signHint">&#10003; ${esc(signedMsg)}</span>`
+                     :`<span class="hint" id="signHint">The Second Read runs automatically before the signature commits.</span>`;
   return `<textarea class="notearea" id="noteArea" spellcheck="false">${esc(noteDraft)}</textarea>
-    <div class="signbar"><button class="sign" id="signBtn">Sign note</button>
-      <button class="ghost" id="resetNote">Reset</button>
-      <span class="hint" id="signHint">The Second Read runs automatically before the signature commits.</span></div>`;
+    <div class="signbar">${btn}<button class="ghost" id="resetNote">Reset</button>${status}</div>`;
 }
 function wireNoteTab(){
   const ta=document.getElementById('noteArea');
-  ta.oninput=()=>{noteDraft=ta.value;};
-  document.getElementById('signBtn').onclick=sign;
-  document.getElementById('resetNote').onclick=()=>{noteDraft=current.note_under_review.text;ta.value=noteDraft;document.getElementById('signHint').textContent='';};
+  ta.oninput=()=>{noteDraft=ta.value; if(signed){signed=false;signedMsg="";renderEncounter();}};
+  if(!signed) document.getElementById('signBtn').onclick=sign;
+  document.getElementById('resetNote').onclick=()=>{noteDraft=current.note_under_review.text;signed=false;signedMsg="";renderEncounter();};
 }
 function transcriptTab(){
   const t=current.transcript; if(!t) return '<div class="hint">No transcript.</div>';
@@ -325,20 +329,21 @@ function renderSupported(r){
   const clearedHtml=cl.length?`<details class="cleared" open><summary>&#128065; Second read considered and cleared ${cl.length} apparent conflict${cl.length>1?'s':''}</summary>
     ${cl.map(c=>`<div class="cwhy">${esc(c.why_consistent)}</div>${(c.items||[]).map(it=>`<div class="cchk"><span><span class="g">&#10003;</span>${esc(it.label)}</span><span class="ts">${esc(it.discipline)} &middot; ${esc(tshort(it.timestamp))}</span></div>`).join('')}`).join('<div style="height:12px"></div>')}
     </details>`:'';
+  // Consistent = the second read cleared it, so the signature commits now.
+  setSigned('Note signed — consistent with the chart.');
   openModal(`
-    <div class="mhead ok"><div class="mt">&#10003; Ready to sign &mdash; consistent</div>
+    <div class="mhead ok"><div class="mt">&#10003; Note signed &mdash; consistent</div>
       <div style="display:flex;gap:12px;align-items:center"><span class="conf">${r.confidence!=null?r.confidence+'% confidence':''}</span><button class="xbtn" onclick="closeModal()">&times;</button></div></div>
     <div class="mbody"><div class="okwrap">
-      <div class="okline">Checked against ${r.docs_checked} interdisciplinary notes. ${esc(r.headline||'The note is consistent with the chart.')}</div>
+      <div class="okline">Signed and checked against ${r.docs_checked} interdisciplinary notes. ${esc(r.headline||'The note is consistent with the chart.')}</div>
       ${clearedHtml}
     </div></div>
-    <div class="mfoot"><button class="btn" onclick="closeModal()">Close</button><button class="btn primary" data-a="sign">Sign note</button></div>`);
-  const sb=document.querySelector('.mfoot .btn[data-a="sign"]'); if(sb) sb.onclick=()=>{closeModal();setSigned('Signed — consistent with the chart.');};
+    <div class="mfoot"><button class="btn primary" onclick="closeModal()">Done</button></div>`);
 }
 
 function setSigned(msg){
-  const h=document.getElementById('signHint'); if(h){h.className='signed-chip';h.textContent='✓ '+msg;}
-  const b=document.getElementById('signBtn'); if(b){b.textContent='Signed';b.disabled=true;}
+  signed=true; signedMsg=msg;
+  if(activeTab==='note') renderEncounter();
 }
 
 // import
