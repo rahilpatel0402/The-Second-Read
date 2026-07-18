@@ -192,7 +192,12 @@ let cases=[], current=null, importedChart=null, activeTab="note", noteDraft="";
 let signed=false, signedMsg="";
 
 function esc(s){return (s||"").replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
-function tshort(t){return (t||"").replace('T',' ').slice(0,16);}
+function tshort(t){
+  if(!t) return "";
+  const m=String(t).match(/^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}:\d{2}))?/);
+  if(!m) return String(t);                       // non-ISO (e.g. typed) passes through
+  return `${m[2]}/${m[3]}/${m[1]}`+(m[4]?' '+m[4]:'');  // MM/DD/YYYY HH:MM
+}
 
 async function loadCases(){
   cases=(await (await fetch('/api/charts')).json()).charts;
@@ -382,7 +387,7 @@ function val(id){const e=document.getElementById(id);return e?e.value:'';}
 function docRowHtml(){
   const opts=IMPORT_DISCIPLINES.map(d=>`<option>${d}</option>`).join('');
   return `<div class="docrow"><select class="dr_disc">${opts}</select>
-    <input class="dr_ts" placeholder="2026-07-17 14:00 (optional)"/>
+    <input class="dr_ts" placeholder="07/17/2026 14:00 (optional)"/>
     <button class="dr_del" type="button" title="Remove">&times;</button>
     <textarea class="dr_text" placeholder="Paste this discipline's note"></textarea></div>`;
 }
