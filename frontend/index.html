@@ -164,8 +164,8 @@
           <div class="meta" id="encMeta"></div>
         </div>
         <div class="tabs" id="tabs">
-          <div class="tab act" data-tab="note">Clinical note</div>
-          <div class="tab" data-tab="transcript">Transcript</div>
+          <div class="tab act" data-tab="transcript">Transcript</div>
+          <div class="tab" data-tab="note">Clinical note</div>
           <div class="tab" data-tab="chart">Interdisciplinary chart</div>
         </div>
         <div class="tabwrap" id="tabwrap"></div>
@@ -200,7 +200,7 @@ async function selectCase(id){
   let chart;
   if(id==='__imported__'&&importedChart) chart=importedChart;
   else chart=await (await fetch('/api/chart/'+encodeURIComponent(id))).json();
-  current=chart; noteDraft=chart.note_under_review.text; activeTab="note";
+  current=chart; noteDraft=chart.note_under_review.text; activeTab="transcript";
   signed=false; signedMsg="";
   document.querySelectorAll('.case').forEach(el=>el.classList.toggle('sel',el.dataset.id===id));
   renderEncounter();
