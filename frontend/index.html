@@ -329,27 +329,26 @@ function renderDiscrepancy(r){
       <button class="btn" data-a="dismiss">Dismiss</button>
       <button class="btn" data-a="signanyway">Sign anyway</button>
       <button class="btn" data-a="route">Send query to ${esc(routeShort)}</button>
-      ${edits.length?`<button class="btn primary" data-a="apply">Approve &amp; apply to note</button>`:''}
+      ${edits.length?`<button class="btn primary" data-a="applysign">Approve &amp; sign corrected note</button>`:''}
     </div>`);
   document.querySelectorAll('.ibtn').forEach(b=>b.onclick=()=>{const el=document.getElementById(b.dataset.full);if(el)el.style.display=el.style.display==='none'?'block':'none';});
   document.querySelectorAll('.mfoot .btn').forEach(b=>b.onclick=()=>{
     const a=b.dataset.a;
-    if(a==='apply'){applyCorrection(f0);}
+    if(a==='applysign'){applyAndSign(f0);}
     else if(a==='route'){b.textContent='✓ Query routed';b.classList.add('routed');}
     else if(a==='dismiss'){closeModal();}
     else if(a==='signanyway'){closeModal();setSigned('Signed with an open query to '+routeShort+'.');}
   });
 }
-function applyCorrection(f){
+function applyAndSign(f){
   let d=noteDraft;
   (f.edits||[]).forEach(e=>{
     const pat=e.target.trim().replace(/[.*+?^${}()|[\]\\]/g,'\\$&').replace(/\s+/g,'\\s+');
     try{ d=d.replace(new RegExp(pat), ()=>e.replacement); }catch(err){}
   });
-  noteDraft=d; signed=false; signedMsg="";
-  closeModal(); activeTab='note'; renderEncounter();
-  const h=document.getElementById('signHint'); if(h) h.textContent='Corrections applied in the note — review and sign.';
-  window.scrollTo({top:0,behavior:'smooth'});
+  noteDraft=d; activeTab='note';
+  closeModal();
+  setSigned('Corrected per the second read and signed.');
 }
 
 function renderSupported(r){
