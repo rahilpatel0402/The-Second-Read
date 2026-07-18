@@ -240,13 +240,29 @@ cardiology in agreement. 2. Continue telemetry and rate monitoring. 3. Continue 
 resolved. 4. Reassess in 24 hours.
 """),
     "documents": [
-        doc("CARD-003", "Cardiology", "Cardiology", "Cardiology consult",
+        doc("CARD-003", "Cardiology Consultation Note", "Cardiology", "M. Osei, MD - Cardiology",
             "2026-07-18T09:10:00-07:00", """
-Telemetry reviewed at bedside. Confirmed new-onset atrial fibrillation with rapid ventricular response
-overnight, now rate-controlled. No evidence of acute ischemia on rhythm strip. CHA2DS2-VASc elevated;
-recommend initiating oral anticoagulation for stroke prevention absent contraindication - apixaban a
-reasonable agent. Agree with attending plan.
-"""),
+CARDIOLOGY CONSULTATION NOTE
+
+Reason for consult: New-onset atrial fibrillation on overnight telemetry.
+
+Interval history: 76-year-old man, SNF day 9 after hospitalization for community-acquired pneumonia (resolved), referred for new-onset atrial fibrillation with rapid ventricular response captured overnight. Currently asymptomatic - no chest pain, palpitations, dyspnea, or presyncope.
+
+Data reviewed: Telemetry strips reviewed at bedside - atrial fibrillation with rapid ventricular response overnight, now rate-controlled in the 70s-80s. No evidence of acute ischemia on rhythm strip. Recent labs reviewed; renal function adequate for standard DOAC dosing.
+
+Focused exam: Irregularly irregular rhythm, no murmur or gallop. No signs of decompensated heart failure. Lungs clear.
+
+Impression:
+1. New-onset atrial fibrillation, rate-controlled, hemodynamically stable.
+2. Elevated stroke risk - CHA2DS2-VASc 4 (age, hypertension, prior TIA).
+
+Recommendations:
+1. Recommend initiating oral anticoagulation for stroke prevention absent contraindication - apixaban 5 mg PO BID a reasonable agent given age and renal function.
+2. Continue current rate control; telemetry for a further 24-48 hours.
+3. No indication for cardioversion at this time; outpatient cardiology follow-up in 2-4 weeks.
+
+Discussed with the attending at bedside; agree with attending plan to start apixaban today. Thank you for this consult - will follow.
+""", raw=True),
         doc("NUR-003", "Nursing", "Nursing", "RN",
             "2026-07-18T14:20:00-07:00", """
 Medication administration record reconciled for the 14:00 pass. Active anticoagulation: none. Therapeutic
